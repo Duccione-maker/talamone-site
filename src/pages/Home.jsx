@@ -6,8 +6,14 @@ import "react-day-picker/dist/style.css";
 import { APARTMENTS } from "../data/apartments";
 
 const APARTMENT = APARTMENTS[0]; // single apartment
-const PHOTO_HERO = "/images/hero.jpg";
 const PHOTO_CALA = "/images/cala.jpg";
+
+const HERO_IMAGES = [
+  "/images/hero1.jpg",
+  "/images/hero2.jpg",
+  "/images/hero3.jpg",
+  "/images/hero4.jpg",
+];
 
 // ─── TRANSLATIONS ───────────────────────────────────────────────────────────
 
@@ -528,8 +534,16 @@ const calendarCss = `
 
 export default function Home({ lang, setLang, scrollY }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [activeHero, setActiveHero] = useState(0);
   const navigate = useNavigate();
   const t = T[lang] || T.en;
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveHero((i) => (i + 1) % HERO_IMAGES.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, []);
 
   const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
 
@@ -606,6 +620,21 @@ export default function Home({ lang, setLang, scrollY }) {
 
       {/* HERO */}
       <section id="hero" style={styles.hero}>
+        {/* Slideshow images */}
+        {HERO_IMAGES.map((src, i) => (
+          <img
+            key={src}
+            src={src}
+            alt=""
+            style={{
+              ...styles.heroImg,
+              opacity: i === activeHero ? 1 : 0,
+            }}
+          />
+        ))}
+        {/* Dark overlay for text readability */}
+        <div style={styles.heroOverlay} />
+        {/* Content */}
         <div style={styles.heroContent}>
           <div style={styles.heroSub}>{t.heroSub}</div>
           <h1 style={styles.heroTitle}>Cala di Forno</h1>
@@ -614,13 +643,18 @@ export default function Home({ lang, setLang, scrollY }) {
           </p>
           <div style={styles.heroDetails}>{t.heroDetails}</div>
           <button style={styles.heroCta} onClick={() => scrollTo("booking")}>{t.heroCta}</button>
+          {/* Dot indicators */}
+          <div style={styles.heroDots}>
+            {HERO_IMAGES.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setActiveHero(i)}
+                style={{ ...styles.heroDot, opacity: i === activeHero ? 1 : 0.35 }}
+                aria-label={`Foto ${i + 1}`}
+              />
+            ))}
+          </div>
         </div>
-        <div style={styles.heroOverlay} />
-      </section>
-
-      {/* PROPERTY PHOTO */}
-      <section style={styles.propertyPhoto}>
-        <img src={PHOTO_HERO} alt="Cala di Forno Talamone" style={styles.propertyImg} />
       </section>
 
       {/* ESSENCE */}
@@ -819,17 +853,17 @@ const styles = {
   langBtn: { padding: "4px 10px", fontSize: 11, letterSpacing: 1, cursor: "pointer", transition: "all 0.2s", color: "#8a7f72" },
   langActive: { background: "#1a1a1a", color: "#f4efe8" },
 
-  hero: { minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", background: "linear-gradient(135deg, #1a2a38 0%, #1a1a1a 50%, #1a2a38 100%)", padding: "0 24px", textAlign: "center" },
-  heroOverlay: { position: "absolute", inset: 0, background: "radial-gradient(ellipse at 30% 50%, rgba(100,160,200,0.08) 0%, transparent 70%)", pointerEvents: "none" },
+  hero: { minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", background: "#1a1a1a", padding: "0 24px", textAlign: "center", overflow: "hidden" },
+  heroImg: { position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", transition: "opacity 1.2s ease", zIndex: 0 },
+  heroOverlay: { position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.3) 60%, rgba(0,0,0,0.55) 100%)", zIndex: 1, pointerEvents: "none" },
   heroContent: { position: "relative", zIndex: 2 },
+  heroDots: { display: "flex", justifyContent: "center", gap: 10, marginTop: 32 },
+  heroDot: { width: 8, height: 8, borderRadius: "50%", background: "#f4efe8", border: "none", cursor: "pointer", padding: 0, transition: "opacity 0.3s ease" },
   heroSub: { fontSize: 12, letterSpacing: 4, color: "#8a7f72", marginBottom: 24, textTransform: "uppercase" },
   heroTitle: { fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(48px, 10vw, 120px)", fontWeight: 300, color: "#f4efe8", letterSpacing: -1, lineHeight: 0.95, marginBottom: 24 },
   heroTagline: { fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(20px, 3vw, 28px)", fontWeight: 300, color: "#a89e91", lineHeight: 1.4, marginBottom: 32 },
   heroDetails: { fontSize: 13, color: "#6b6156", letterSpacing: 1, marginBottom: 40 },
   heroCta: { background: "transparent", color: "#f4efe8", border: "1px solid #f4efe8", padding: "14px 36px", fontFamily: "'DM Sans', sans-serif", fontSize: 13, letterSpacing: 2, cursor: "pointer", transition: "all 0.3s ease" },
-
-  propertyPhoto: { width: "100%", overflow: "hidden", lineHeight: 0 },
-  propertyImg: { width: "100%", height: "auto", display: "block", maxHeight: 500, objectFit: "cover" },
 
   essenceSection: { padding: "80px 24px", borderBottom: "1px solid #c8bfb1" },
   essenceGrid: { maxWidth: 1200, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 40, textAlign: "center" },
