@@ -39,7 +39,7 @@ exports.handler = async (event) => {
 
     // Send Telegram notification
     const message = [
-      "🏡 *NUOVA PRENOTAZIONE LA RIPA*",
+      "🌊 *NUOVA PRENOTAZIONE CALA DI FORNO*",
       "",
       `*Appartamento:* ${meta.apartment}`,
       `*Check-in:* ${meta.checkIn}`,

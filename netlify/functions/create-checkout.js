@@ -9,10 +9,7 @@
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 const APT_LABELS = {
-  fienile: "Fienile",
-  ghiri: "Ghiri",
-  nidi: "Nidi",
-  padronale: "Padronale",
+  cala: "Cala di Forno",
 };
 
 exports.handler = async (event) => {
@@ -55,7 +52,7 @@ exports.handler = async (event) => {
             currency: "eur",
             unit_amount: totalCents,
             product_data: {
-              name: `La Ripa — ${aptLabel}`,
+              name: `Cala di Forno — ${aptLabel}`,
               description: [
                 `${nights} notti · ${checkIn} → ${checkOut} · ${guests || 2} ospiti`,
                 cleaningCents ? `Pulizie: €${(cleaningCents / 100).toFixed(2)}` : null,

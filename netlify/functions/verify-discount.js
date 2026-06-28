@@ -53,8 +53,8 @@ exports.handler = async (event) => {
 
     // Check if code is valid for this property
     const validFor = data.valid_for;
-    if (validFor !== "all" && validFor !== "laripa") {
-      console.log("verify-discount: code not valid for laripa:", normalizedCode, "valid_for:", validFor);
+    if (validFor !== "all" && validFor !== "talamone") {
+      console.log("verify-discount: code not valid for talamone:", normalizedCode, "valid_for:", validFor);
       return { statusCode: 200, body: JSON.stringify({ valid: false, debug: "wrong_property" }) };
     }
 

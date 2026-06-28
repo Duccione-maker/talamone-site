@@ -3,46 +3,19 @@
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
 
   <url>
-    <loc>https://laripa.notuscany.com/</loc>
-    <xhtml:link rel="alternate" hreflang="it" href="https://laripa.notuscany.com/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://laripa.notuscany.com/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://laripa.notuscany.com/"/>
+    <loc>https://talamone.notuscany.com/</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://talamone.notuscany.com/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://talamone.notuscany.com/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://talamone.notuscany.com/"/>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
 
   <url>
-    <loc>https://laripa.notuscany.com/appartamenti/fienile</loc>
-    <xhtml:link rel="alternate" hreflang="it" href="https://laripa.notuscany.com/appartamenti/fienile"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://laripa.notuscany.com/appartamenti/fienile"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://laripa.notuscany.com/appartamenti/fienile"/>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-
-  <url>
-    <loc>https://laripa.notuscany.com/appartamenti/ghiri</loc>
-    <xhtml:link rel="alternate" hreflang="it" href="https://laripa.notuscany.com/appartamenti/ghiri"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://laripa.notuscany.com/appartamenti/ghiri"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://laripa.notuscany.com/appartamenti/ghiri"/>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-
-  <url>
-    <loc>https://laripa.notuscany.com/appartamenti/nidi</loc>
-    <xhtml:link rel="alternate" hreflang="it" href="https://laripa.notuscany.com/appartamenti/nidi"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://laripa.notuscany.com/appartamenti/nidi"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://laripa.notuscany.com/appartamenti/nidi"/>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-
-  <url>
-    <loc>https://laripa.notuscany.com/appartamenti/padronale</loc>
-    <xhtml:link rel="alternate" hreflang="it" href="https://laripa.notuscany.com/appartamenti/padronale"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://laripa.notuscany.com/appartamenti/padronale"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://laripa.notuscany.com/appartamenti/padronale"/>
+    <loc>https://talamone.notuscany.com/appartamenti/cala</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://talamone.notuscany.com/appartamenti/cala"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://talamone.notuscany.com/appartamenti/cala"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://talamone.notuscany.com/appartamenti/cala"/>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>

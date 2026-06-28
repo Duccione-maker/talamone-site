@@ -4,7 +4,7 @@
 // Used by the frontend calendar to visually disable unavailable dates.
 //
 // ENV VARS needed:
-//   SMOOBU_ICAL_FIENILE / GHIRI / NIDI / PADRONALE
+//   SMOOBU_ICAL_CALA
 
 exports.handler = async (event) => {
   const headers = {

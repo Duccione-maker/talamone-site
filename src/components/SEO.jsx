@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-const SITE_URL = "https://laripa.notuscany.com";
+const SITE_URL = "https://talamone.notuscany.com";
 const OG_IMAGE = `${SITE_URL}/images/hero.jpg`;
 
 function setMeta(name, content, attr = "name") {
@@ -14,7 +14,6 @@ function setMeta(name, content, attr = "name") {
 }
 
 function setLink(rel, href, extra = {}) {
-  // For canonical/hreflang we match on rel+hreflang or rel alone
   const hreflang = extra.hreflang;
   let selector = hreflang
     ? `link[rel="${rel}"][hreflang="${hreflang}"]`
@@ -53,84 +52,78 @@ export function HomeSEO({ lang }) {
     document.documentElement.lang = lang;
 
     document.title = isIt
-      ? "La Ripa di San Gimignano — Agriturismo in Toscana | 4 Appartamenti con Piscina"
-      : "La Ripa San Gimignano — Tuscany Agriturismo | 4 Apartments with Pool";
+      ? "Cala di Forno Talamone — Appartamento nel Parco della Maremma | 50 m dal Mare"
+      : "Cala di Forno Talamone — Apartment in Maremma Natural Park | 50 m from the Sea";
 
     setMeta("description", isIt
-      ? "La Ripa: 4 appartamenti indipendenti immersi negli ulivi di San Gimignano. Piscina panoramica, energia solare, prenotazione diretta senza commissioni. Nel cuore del Chianti."
-      : "La Ripa: 4 independent apartments among the olive groves of San Gimignano. Panoramic pool, solar energy, direct booking with no fees. In the heart of Chianti, Tuscany."
+      ? "Cala di Forno: appartamento nel Parco Naturale della Maremma, a 50 metri dal mare. 100 mq, giardino privato, doccia solare. Prenotazione diretta senza commissioni."
+      : "Cala di Forno: apartment in the Maremma Natural Park, 50 metres from the sea. 100 sqm, private garden, solar shower. Direct booking with no fees."
     );
 
     setMeta("robots", "index, follow");
 
-    // Open Graph
     setMeta("og:type", "website", "property");
     setMeta("og:url", `${SITE_URL}/`, "property");
     setMeta("og:title", isIt
-      ? "La Ripa di San Gimignano — Agriturismo in Toscana"
-      : "La Ripa San Gimignano — Tuscany Agriturismo", "property");
+      ? "Cala di Forno Talamone — Parco della Maremma"
+      : "Cala di Forno Talamone — Maremma Natural Park", "property");
     setMeta("og:description", isIt
-      ? "4 appartamenti indipendenti, piscina panoramica, 250 ulivi. Prenota direttamente."
-      : "4 independent apartments, panoramic pool, 250 olive trees. Book directly.", "property");
+      ? "50 metri dal mare, giardino privato, Parco della Maremma. Prenota direttamente."
+      : "50 metres from the sea, private garden, Maremma Natural Park. Book directly.", "property");
     setMeta("og:image", OG_IMAGE, "property");
     setMeta("og:image:width", "1200", "property");
     setMeta("og:image:height", "630", "property");
     setMeta("og:locale", isIt ? "it_IT" : "en_US", "property");
     setMeta("og:locale:alternate", isIt ? "en_US" : "it_IT", "property");
-    setMeta("og:site_name", "La Ripa di San Gimignano", "property");
+    setMeta("og:site_name", "Cala di Forno Talamone", "property");
 
-    // Twitter
     setMeta("twitter:card", "summary_large_image");
     setMeta("twitter:title", isIt
-      ? "La Ripa di San Gimignano — Agriturismo in Toscana"
-      : "La Ripa San Gimignano — Tuscany Agriturismo");
+      ? "Cala di Forno Talamone — Parco della Maremma"
+      : "Cala di Forno Talamone — Maremma Natural Park");
     setMeta("twitter:description", isIt
-      ? "4 appartamenti indipendenti, piscina panoramica, 250 ulivi."
-      : "4 independent apartments, panoramic pool, 250 olive trees.");
+      ? "50 metri dal mare, giardino privato, Parco della Maremma."
+      : "50 metres from the sea, private garden, Maremma Natural Park.");
     setMeta("twitter:image", OG_IMAGE);
 
-    // Canonical + hreflang
     setLink("canonical", `${SITE_URL}/`);
     setLink("alternate", `${SITE_URL}/`, { hreflang: "it" });
     setLink("alternate", `${SITE_URL}/`, { hreflang: "en" });
     setLink("alternate", `${SITE_URL}/`, { hreflang: "x-default" });
 
-    // Schema.org LodgingBusiness
     setSchema("schema-home", {
       "@context": "https://schema.org",
       "@type": "LodgingBusiness",
       "@id": `${SITE_URL}/#lodging`,
-      "name": "La Ripa di San Gimignano",
+      "name": "Cala di Forno Talamone",
       "description": isIt
-        ? "Agriturismo con 4 appartamenti indipendenti immersi negli ulivi di San Gimignano, piscina panoramica e 250 ulivi."
-        : "Agriturismo with 4 independent apartments among the olive groves of San Gimignano, panoramic pool and 250 olive trees.",
+        ? "Appartamento nel Parco Naturale della Maremma a 50 metri dal mare. 100 mq, giardino privato, doccia solare esterna."
+        : "Apartment in the Maremma Natural Park, 50 metres from the sea. 100 sqm, private garden, outdoor solar shower.",
       "url": SITE_URL,
       "telephone": "+393517352679",
       "email": "info@notuscany.com",
       "image": OG_IMAGE,
       "priceRange": "€€€",
-      "starRating": { "@type": "Rating", "ratingValue": "4" },
       "address": {
         "@type": "PostalAddress",
-        "streetAddress": "Località La Ripa",
-        "addressLocality": "San Gimignano",
+        "addressLocality": "Talamone",
         "addressRegion": "Toscana",
-        "postalCode": "53037",
+        "postalCode": "58010",
         "addressCountry": "IT"
       },
       "geo": {
         "@type": "GeoCoordinates",
-        "latitude": 43.502285416557065,
-        "longitude": 11.071656562477644
+        "latitude": 42.5524,
+        "longitude": 11.1362
       },
       "amenityFeature": [
-        { "@type": "LocationFeatureSpecification", "name": "Piscina", "value": true },
-        { "@type": "LocationFeatureSpecification", "name": "Energia solare", "value": true },
-        { "@type": "LocationFeatureSpecification", "name": "Parcheggio gratuito", "value": true },
+        { "@type": "LocationFeatureSpecification", "name": "Accesso al mare", "value": true },
+        { "@type": "LocationFeatureSpecification", "name": "Giardino privato", "value": true },
+        { "@type": "LocationFeatureSpecification", "name": "Doccia solare", "value": true },
         { "@type": "LocationFeatureSpecification", "name": "WiFi", "value": true },
         { "@type": "LocationFeatureSpecification", "name": "Cucina attrezzata", "value": true }
       ],
-      "numberOfRooms": 4,
+      "numberOfRooms": 1,
       "checkinTime": "15:00",
       "checkoutTime": "10:00",
       "petsAllowed": false,
@@ -157,45 +150,41 @@ export function ApartmentSEO({ apt, lang }) {
     document.documentElement.lang = lang;
 
     document.title = isIt
-      ? `${apt.name} — La Ripa di San Gimignano | Appartamento in Toscana`
-      : `${apt.name} — La Ripa San Gimignano | Tuscany Apartment`;
+      ? `${apt.name} — Talamone, Maremma | Appartamento sul Mare`
+      : `${apt.name} — Talamone, Maremma | Seafront Apartment`;
 
     setMeta("description", isIt
-      ? `${t.tagline}. ${apt.sqm} m², max ${apt.maxGuests} ospiti. Prenota direttamente su La Ripa, San Gimignano.`
-      : `${t.tagline}. ${apt.sqm} m², up to ${apt.maxGuests} guests. Book directly at La Ripa, San Gimignano.`
+      ? `${t.tagline}. ${apt.sqm} m², max ${apt.maxGuests} ospiti. Prenota direttamente, Talamone.`
+      : `${t.tagline}. ${apt.sqm} m², up to ${apt.maxGuests} guests. Book directly, Talamone.`
     );
 
     setMeta("robots", "index, follow");
 
-    // Open Graph
     setMeta("og:type", "website", "property");
     setMeta("og:url", url, "property");
-    setMeta("og:title", `${apt.name} — La Ripa San Gimignano`, "property");
+    setMeta("og:title", `${apt.name} — Talamone, Maremma`, "property");
     setMeta("og:description", `${t.tagline}. ${apt.sqm} m², max ${apt.maxGuests} guests.`, "property");
     setMeta("og:image", image, "property");
     setMeta("og:image:width", "1200", "property");
     setMeta("og:image:height", "630", "property");
     setMeta("og:locale", isIt ? "it_IT" : "en_US", "property");
-    setMeta("og:site_name", "La Ripa di San Gimignano", "property");
+    setMeta("og:site_name", "Cala di Forno Talamone", "property");
 
-    // Twitter
     setMeta("twitter:card", "summary_large_image");
-    setMeta("twitter:title", `${apt.name} — La Ripa San Gimignano`);
+    setMeta("twitter:title", `${apt.name} — Talamone, Maremma`);
     setMeta("twitter:description", `${t.tagline}. ${apt.sqm} m², max ${apt.maxGuests} guests.`);
     setMeta("twitter:image", image);
 
-    // Canonical + hreflang
     setLink("canonical", url);
     setLink("alternate", url, { hreflang: "it" });
     setLink("alternate", url, { hreflang: "en" });
     setLink("alternate", url, { hreflang: "x-default" });
 
-    // Schema.org Accommodation
     setSchema("schema-apartment", {
       "@context": "https://schema.org",
       "@type": "Accommodation",
       "@id": `${url}#accommodation`,
-      "name": `${apt.name} — La Ripa di San Gimignano`,
+      "name": `${apt.name} — Talamone, Maremma`,
       "description": t.description,
       "url": url,
       "image": image,
@@ -208,7 +197,7 @@ export function ApartmentSEO({ apt, lang }) {
         "@type": "QuantitativeValue",
         "maxValue": apt.maxGuests
       },
-      "numberOfBathroomsTotal": 1,
+      "numberOfBathroomsTotal": 2,
       "amenityFeature": apt.amenities?.map((a) => ({
         "@type": "LocationFeatureSpecification",
         "name": a.en,
@@ -217,19 +206,19 @@ export function ApartmentSEO({ apt, lang }) {
       "containedInPlace": {
         "@type": "LodgingBusiness",
         "@id": `${SITE_URL}/#lodging`,
-        "name": "La Ripa di San Gimignano"
+        "name": "Cala di Forno Talamone"
       },
       "address": {
         "@type": "PostalAddress",
-        "addressLocality": "San Gimignano",
+        "addressLocality": "Talamone",
         "addressRegion": "Toscana",
-        "postalCode": "53037",
+        "postalCode": "58010",
         "addressCountry": "IT"
       },
       "geo": {
         "@type": "GeoCoordinates",
-        "latitude": 43.502285416557065,
-        "longitude": 11.071656562477644
+        "latitude": 42.5524,
+        "longitude": 11.1362
       }
     });
 

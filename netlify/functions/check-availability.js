@@ -4,15 +4,9 @@
 // parses blocked dates, then calls Smoobu /api/rates for real pricing.
 //
 // ENV VARS needed:
-//   SMOOBU_ICAL_FIENILE      = https://login.smoobu.com/en/cockpit/ical/...
-//   SMOOBU_ICAL_GHIRI        = https://login.smoobu.com/en/cockpit/ical/...
-//   SMOOBU_ICAL_NIDI         = https://login.smoobu.com/en/cockpit/ical/...
-//   SMOOBU_ICAL_PADRONALE    = https://login.smoobu.com/en/cockpit/ical/...
+//   SMOOBU_ICAL_CALA         = https://login.smoobu.com/en/cockpit/ical/...
 //   SMOOBU_API_KEY           = API key from Smoobu Settings
-//   SMOOBU_APT_ID_FIENILE    = 195816
-//   SMOOBU_APT_ID_GHIRI      = 195814
-//   SMOOBU_APT_ID_NIDI       = 195815
-//   SMOOBU_APT_ID_PADRONALE  = 192379
+//   SMOOBU_APT_ID_CALA       = 3397626
 
 exports.handler = async (event) => {
   if (event.httpMethod !== "POST") {
