@@ -859,10 +859,10 @@ const styles = {
   heroContent: { position: "relative", zIndex: 2 },
   heroDots: { display: "flex", justifyContent: "center", gap: 10, marginTop: 32 },
   heroDot: { width: 8, height: 8, borderRadius: "50%", background: "#f4efe8", border: "none", cursor: "pointer", padding: 0, transition: "opacity 0.3s ease" },
-  heroSub: { fontSize: 12, letterSpacing: 4, color: "#8a7f72", marginBottom: 24, textTransform: "uppercase" },
+  heroSub: { fontSize: 12, letterSpacing: 4, color: "#D62626", marginBottom: 24, textTransform: "uppercase" },
   heroTitle: { fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(48px, 10vw, 120px)", fontWeight: 300, color: "#f4efe8", letterSpacing: -1, lineHeight: 0.95, marginBottom: 24, textShadow: "0 2px 20px rgba(0,0,0,0.5)" },
   heroTagline: { fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(20px, 3vw, 28px)", fontWeight: 300, color: "#e8e0d8", lineHeight: 1.4, marginBottom: 32, textShadow: "0 1px 10px rgba(0,0,0,0.5)" },
-  heroDetails: { fontSize: 13, color: "#6b6156", letterSpacing: 1, marginBottom: 40 },
+  heroDetails: { fontSize: 13, color: "#10B981", letterSpacing: 1, marginBottom: 40 },
   heroCta: { background: "transparent", color: "#f4efe8", border: "1px solid #f4efe8", padding: "14px 36px", fontFamily: "'DM Sans', sans-serif", fontSize: 13, letterSpacing: 2, cursor: "pointer", transition: "all 0.3s ease" },
 
   essenceSection: { padding: "80px 24px", borderBottom: "1px solid #c8bfb1" },
