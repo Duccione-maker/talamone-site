@@ -11,7 +11,6 @@ export const APARTMENTS = [
     photo: "/images/esterno.jpg",
     gallery: [
       "/images/esterno.jpg",
-      "/images/esterno2.jpg",
       "/images/matrimoniale.jpg",
       "/images/divano%20letto.jpg",
       "/images/divano%20letto%202.jpg",
