@@ -6,7 +6,11 @@ import "react-day-picker/dist/style.css";
 import { APARTMENTS } from "../data/apartments";
 
 const APARTMENT = APARTMENTS[0]; // single apartment
-const PHOTO_CALA = "/images/cala.jpg";
+
+const APT_IMAGES = [
+  "/images/hero3.jpg",
+  "/images/hero4.jpg",
+];
 
 const HERO_IMAGES = [
   "/images/hero1.jpg",
@@ -118,6 +122,45 @@ const T = {
 
 const CITY_NAMES = ["Orbetello", "Porto Santo Stefano", "Capalbio", "Grosseto", "Siena", "Roma"];
 const CITY_KM = [12, 22, 28, 46, 105, 175];
+
+// ─── APARTMENT SLIDESHOW ─────────────────────────────────────────────────────
+
+function AptSlideshow({ images }) {
+  const [idx, setIdx] = useState(0);
+  const prev = () => setIdx((i) => (i - 1 + images.length) % images.length);
+  const next = () => setIdx((i) => (i + 1) % images.length);
+
+  return (
+    <div style={{ position: "relative", overflow: "hidden", height: 420 }}>
+      {images.map((src, i) => (
+        <img
+          key={src}
+          src={src}
+          alt={`Cala di Forno ${i + 1}`}
+          style={{
+            position: "absolute", inset: 0, width: "100%", height: "100%",
+            objectFit: "cover", opacity: i === idx ? 1 : 0,
+            transition: "opacity 0.6s ease",
+          }}
+        />
+      ))}
+      <button onClick={prev} style={arrowStyle("left")}>‹</button>
+      <button onClick={next} style={arrowStyle("right")}>›</button>
+      <div style={{ position: "absolute", bottom: 12, left: "50%", transform: "translateX(-50%)", display: "flex", gap: 8 }}>
+        {images.map((_, i) => (
+          <button key={i} onClick={() => setIdx(i)} style={{ width: 7, height: 7, borderRadius: "50%", border: "none", cursor: "pointer", padding: 0, background: i === idx ? "#fff" : "rgba(255,255,255,0.4)", transition: "background 0.3s" }} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+const arrowStyle = (side) => ({
+  position: "absolute", top: "50%", transform: "translateY(-50%)",
+  [side]: 12, background: "rgba(0,0,0,0.35)", color: "#fff",
+  border: "none", cursor: "pointer", fontSize: 28, lineHeight: 1,
+  padding: "8px 14px", zIndex: 2, transition: "background 0.2s",
+});
 
 // ─── BOOKING WIDGET ──────────────────────────────────────────────────────────
 
@@ -675,7 +718,7 @@ export default function Home({ lang, setLang, scrollY }) {
           <div style={styles.sectionLabel}>{t.aptSection}</div>
           <h2 style={styles.sectionTitle}>{t.aptTitle}</h2>
           <div style={styles.aptDetail}>
-            <img src={PHOTO_CALA} alt="Cala di Forno" style={styles.aptDetailImg} loading="lazy" />
+            <AptSlideshow images={APT_IMAGES} />
             <div style={styles.aptDetailBody}>
               <div style={styles.aptTagline}>{t.apt.tagline}</div>
               <div style={styles.aptMeta}>
