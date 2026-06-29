@@ -140,28 +140,31 @@ const CITY_KM = [12, 22, 28, 46, 105, 175];
 
 function AptSlideshow({ images }) {
   const [idx, setIdx] = useState(0);
-  const prev = () => setIdx((i) => (i - 1 + images.length) % images.length);
-  const next = () => setIdx((i) => (i + 1) % images.length);
+  const [loaded, setLoaded] = useState(new Set([0]));
+  const prev = () => setIdx((i) => { const n = (i - 1 + images.length) % images.length; setLoaded((s) => new Set([...s, n, (n - 1 + images.length) % images.length])); return n; });
+  const next = () => setIdx((i) => { const n = (i + 1) % images.length; setLoaded((s) => new Set([...s, n, (n + 1) % images.length])); return n; });
 
   return (
-    <div style={{ position: "relative", overflow: "hidden", height: 420 }}>
+    <div style={{ position: "relative", overflow: "hidden", height: 420, background: "#1a1a1a" }}>
       {images.map((src, i) => (
-        <img
-          key={src}
-          src={src}
-          alt={`Cala di Forno ${i + 1}`}
-          style={{
-            position: "absolute", inset: 0, width: "100%", height: "100%",
-            objectFit: "cover", opacity: i === idx ? 1 : 0,
-            transition: "opacity 0.6s ease",
-          }}
-        />
+        loaded.has(i) ? (
+          <img
+            key={src}
+            src={src}
+            alt={`Cala di Forno ${i + 1}`}
+            style={{
+              position: "absolute", inset: 0, width: "100%", height: "100%",
+              objectFit: "cover", opacity: i === idx ? 1 : 0,
+              transition: "opacity 0.5s ease",
+            }}
+          />
+        ) : null
       ))}
       <button onClick={prev} style={arrowStyle("left")}>‹</button>
       <button onClick={next} style={arrowStyle("right")}>›</button>
       <div style={{ position: "absolute", bottom: 12, left: "50%", transform: "translateX(-50%)", display: "flex", gap: 8 }}>
         {images.map((_, i) => (
-          <button key={i} onClick={() => setIdx(i)} style={{ width: 7, height: 7, borderRadius: "50%", border: "none", cursor: "pointer", padding: 0, background: i === idx ? "#fff" : "rgba(255,255,255,0.4)", transition: "background 0.3s" }} />
+          <button key={i} onClick={() => { setIdx(i); setLoaded((s) => new Set([...s, i, (i+1)%images.length, (i-1+images.length)%images.length])); }} style={{ width: 7, height: 7, borderRadius: "50%", border: "none", cursor: "pointer", padding: 0, background: i === idx ? "#fff" : "rgba(255,255,255,0.4)", transition: "background 0.3s" }} />
         ))}
       </div>
     </div>
