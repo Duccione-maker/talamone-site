@@ -42,16 +42,20 @@ export default function Apartment({ lang = "en" }) {
       </div>
 
       {/* Hero photo */}
-      <div style={styles.heroPhoto}>
-        <img src={apt.photo} alt={apt.name} style={styles.heroImg} />
+      <div style={{ maxWidth: 1000, margin: "0 auto", padding: "0 24px" }}>
+        <div style={styles.heroPhoto}>
+          <img src={apt.photo} alt={apt.name} style={styles.heroImg} />
+        </div>
       </div>
 
       {/* Gallery — additional photos when provided */}
       {apt.gallery.length > 1 && (
-        <div style={styles.gallery}>
-          {apt.gallery.map((src, i) => (
-            <img key={i} src={src} alt={`${apt.name} ${i + 1}`} style={styles.galleryImg} loading="lazy" />
-          ))}
+        <div style={{ maxWidth: 1000, margin: "4px auto 0", padding: "0 24px" }}>
+          <div style={styles.gallery}>
+            {apt.gallery.map((src, i) => (
+              <img key={i} src={src} alt={`${apt.name} ${i + 1}`} style={styles.galleryImg} loading="lazy" />
+            ))}
+          </div>
         </div>
       )}
 
