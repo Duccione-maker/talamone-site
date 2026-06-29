@@ -136,46 +136,75 @@ const T = {
 const CITY_NAMES = ["Orbetello", "Porto Santo Stefano", "Capalbio", "Grosseto", "Siena", "Roma"];
 const CITY_KM = [12, 22, 28, 46, 105, 175];
 
-// ─── APARTMENT SLIDESHOW ─────────────────────────────────────────────────────
+// ─── APARTMENT GALLERY ───────────────────────────────────────────────────────
 
-function AptSlideshow({ images }) {
-  const [idx, setIdx] = useState(0);
-  const [loaded, setLoaded] = useState(new Set([0]));
-  const prev = () => setIdx((i) => { const n = (i - 1 + images.length) % images.length; setLoaded((s) => new Set([...s, n, (n - 1 + images.length) % images.length])); return n; });
-  const next = () => setIdx((i) => { const n = (i + 1) % images.length; setLoaded((s) => new Set([...s, n, (n + 1) % images.length])); return n; });
+function AptGallery({ images }) {
+  const [lightbox, setLightbox] = useState(null);
+
+  useEffect(() => {
+    if (lightbox === null) return;
+    const handler = (e) => {
+      if (e.key === "Escape") setLightbox(null);
+      if (e.key === "ArrowRight") setLightbox((i) => (i + 1) % images.length);
+      if (e.key === "ArrowLeft") setLightbox((i) => (i - 1 + images.length) % images.length);
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [lightbox, images.length]);
 
   return (
-    <div style={{ position: "relative", overflow: "hidden", height: 420, background: "#1a1a1a" }}>
-      {images.map((src, i) => (
-        loaded.has(i) ? (
-          <img
+    <>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 4 }}>
+        {images.map((src, i) => (
+          <div
             key={src}
-            src={src}
-            alt={`Cala di Forno ${i + 1}`}
+            onClick={() => setLightbox(i)}
             style={{
-              position: "absolute", inset: 0, width: "100%", height: "100%",
-              objectFit: "cover", opacity: i === idx ? 1 : 0,
-              transition: "opacity 0.5s ease",
+              overflow: "hidden", cursor: "zoom-in",
+              gridColumn: i === 0 ? "span 2" : "span 1",
+              height: i === 0 ? 360 : 220,
             }}
-          />
-        ) : null
-      ))}
-      <button onClick={prev} style={arrowStyle("left")}>‹</button>
-      <button onClick={next} style={arrowStyle("right")}>›</button>
-      <div style={{ position: "absolute", bottom: 12, left: "50%", transform: "translateX(-50%)", display: "flex", gap: 8 }}>
-        {images.map((_, i) => (
-          <button key={i} onClick={() => { setIdx(i); setLoaded((s) => new Set([...s, i, (i+1)%images.length, (i-1+images.length)%images.length])); }} style={{ width: 7, height: 7, borderRadius: "50%", border: "none", cursor: "pointer", padding: 0, background: i === idx ? "#fff" : "rgba(255,255,255,0.4)", transition: "background 0.3s" }} />
+          >
+            <img
+              src={src}
+              alt={`Cala di Forno ${i + 1}`}
+              loading="lazy"
+              style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", transition: "transform 0.4s ease" }}
+              onMouseEnter={(e) => { e.currentTarget.style.transform = "scale(1.04)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.transform = "scale(1)"; }}
+            />
+          </div>
         ))}
       </div>
-    </div>
+
+      {lightbox !== null && (
+        <div
+          onClick={() => setLightbox(null)}
+          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.93)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center" }}
+        >
+          <img
+            src={images[lightbox]}
+            alt={`Cala di Forno ${lightbox + 1}`}
+            onClick={(e) => e.stopPropagation()}
+            style={{ maxWidth: "90vw", maxHeight: "88vh", objectFit: "contain", display: "block" }}
+          />
+          <button onClick={(e) => { e.stopPropagation(); setLightbox((i) => (i - 1 + images.length) % images.length); }} style={lbArrow("left")}>‹</button>
+          <button onClick={(e) => { e.stopPropagation(); setLightbox((i) => (i + 1) % images.length); }} style={lbArrow("right")}>›</button>
+          <button onClick={() => setLightbox(null)} style={{ position: "fixed", top: 20, right: 24, background: "none", color: "#fff", border: "none", fontSize: 32, cursor: "pointer", lineHeight: 1 }}>✕</button>
+          <div style={{ position: "fixed", bottom: 20, left: "50%", transform: "translateX(-50%)", color: "rgba(255,255,255,0.5)", fontSize: 12, fontFamily: "'DM Sans', sans-serif", letterSpacing: 2 }}>
+            {lightbox + 1} / {images.length}
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
-const arrowStyle = (side) => ({
-  position: "absolute", top: "50%", transform: "translateY(-50%)",
-  [side]: 12, background: "rgba(0,0,0,0.35)", color: "#fff",
-  border: "none", cursor: "pointer", fontSize: 28, lineHeight: 1,
-  padding: "8px 14px", zIndex: 2, transition: "background 0.2s",
+const lbArrow = (side) => ({
+  position: "fixed", top: "50%", transform: "translateY(-50%)",
+  [side]: 16, background: "rgba(255,255,255,0.12)", color: "#fff",
+  border: "none", cursor: "pointer", fontSize: 36, lineHeight: 1,
+  padding: "12px 20px", transition: "background 0.2s",
 });
 
 // ─── BOOKING WIDGET ──────────────────────────────────────────────────────────
@@ -729,32 +758,24 @@ export default function Home({ lang, setLang, scrollY }) {
       </section>
 
       {/* APARTMENT */}
-      <section id="apartment" style={styles.section}>
-        <div style={styles.sectionInner}>
+      <section id="apartment" style={{ padding: "100px 0 0" }}>
+        <div style={{ ...styles.sectionInner, padding: "0 24px 48px" }}>
           <div style={styles.sectionLabel}>{t.aptSection}</div>
-          <h2 style={styles.sectionTitle}>{t.aptTitle}</h2>
-          <div style={styles.aptDetail}>
-            <AptSlideshow images={APT_IMAGES} />
-            <div style={styles.aptDetailBody}>
-              <div style={styles.aptTagline}>{t.apt.tagline}</div>
-              <div style={styles.aptMeta}>
-                <span>{t.apt.beds}</span>
-                <span style={styles.aptSqm}>{APARTMENT.sqm} m²</span>
-              </div>
-              <div style={styles.aptFeatures}>
-                {t.apt.features.map((f, i) => <span key={i} style={styles.aptFeature}>{f}</span>)}
-              </div>
-              <p style={{ fontFamily: "'DM Sans', sans-serif", color: "#6b6156", fontSize: 15, lineHeight: 1.8, marginBottom: 24 }}>
-                {t.apt.description}
-              </p>
-              <button
-                style={styles.aptCta}
-                onClick={() => navigate("/appartamenti/cala")}
-              >
-                {t.aptCta}
-              </button>
-            </div>
+          <h2 style={{ ...styles.sectionTitle, marginBottom: 24 }}>{t.aptTitle}</h2>
+          <div style={styles.aptTagline}>{t.apt.tagline}</div>
+          <div style={{ ...styles.aptMeta, marginTop: 16 }}>
+            <span>{t.apt.beds}</span>
+            <span style={styles.aptSqm}>{APARTMENT.sqm} m²</span>
           </div>
+          <div style={{ ...styles.aptFeatures, marginTop: 16 }}>
+            {t.apt.features.map((f, i) => <span key={i} style={styles.aptFeature}>{f}</span>)}
+          </div>
+        </div>
+        <AptGallery images={APT_IMAGES} />
+        <div style={{ maxWidth: 1000, margin: "0 auto", padding: "32px 24px 80px" }}>
+          <button style={styles.aptCta} onClick={() => navigate("/appartamenti/cala")}>
+            {t.aptCta}
+          </button>
         </div>
       </section>
 
