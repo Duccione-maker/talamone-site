@@ -700,16 +700,16 @@ export default function Home({ lang, setLang, scrollY }) {
       </section>
 
       {/* SEA */}
-      <section id="sea" style={{ ...styles.section, padding: "0 0 100px", overflow: "hidden" }}>
+      <section id="sea" style={{ overflow: "hidden" }}>
         <div style={styles.seaPhotos}>
           <img src="/images/hero1.jpg" alt="Il mare di Talamone" style={styles.seaPhoto} />
           <img src="/images/hero2.jpg" alt="Cala di Forno" style={styles.seaPhoto} />
         </div>
-        <div style={styles.sectionInner}>
-          <div style={{ paddingTop: 60 }}>
-            <div style={styles.sectionLabel}>{t.seaLabel}</div>
-            <h2 style={styles.sectionTitle}>{t.seaTitle}</h2>
-            <p style={{ fontFamily: "'DM Sans', sans-serif", color: "#6b6156", fontSize: 16, maxWidth: 540, lineHeight: 1.8 }}>
+        <div style={{ background: "#1a2a38", padding: "60px 24px 100px" }}>
+          <div style={styles.sectionInner}>
+            <div style={{ ...styles.sectionLabel, color: "#10B981" }}>{t.seaLabel}</div>
+            <h2 style={{ ...styles.sectionTitle, color: "#f4efe8", marginBottom: 24 }}>{t.seaTitle}</h2>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", color: "#a89e91", fontSize: 16, maxWidth: 540, lineHeight: 1.8 }}>
               {t.seaDesc}
             </p>
           </div>
@@ -869,7 +869,7 @@ const styles = {
   section: { padding: "100px 24px" },
   sectionInner: { maxWidth: 1000, margin: "0 auto" },
   sectionLabel: { fontSize: 11, letterSpacing: 4, color: "#8a7f72", marginBottom: 16, textTransform: "uppercase" },
-  sectionTitle: { fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(28px, 4vw, 44px)", fontWeight: 300, lineHeight: 1.2, marginBottom: 48 },
+  sectionTitle: { fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(28px, 4vw, 44px)", fontWeight: 400, lineHeight: 1.2, marginBottom: 48, color: "#1a1a1a" },
 
   aptDetail: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 48, alignItems: "start" },
   aptDetailImg: { width: "100%", height: 360, objectFit: "cover", display: "block" },
