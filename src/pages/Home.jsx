@@ -746,7 +746,9 @@ export default function Home({ lang, setLang, scrollY }) {
             {t.apt.features.map((f, i) => <span key={i} style={styles.aptFeature}>{f}</span>)}
           </div>
         </div>
-        <AptSlideshow images={APT_IMAGES} />
+        <div style={{ maxWidth: 1000, margin: "0 auto", padding: "0 24px" }}>
+          <AptSlideshow images={APT_IMAGES} />
+        </div>
         <div style={{ maxWidth: 1000, margin: "0 auto", padding: "32px 24px 80px" }}>
           <button style={styles.aptCta} onClick={() => navigate("/appartamenti/cala")}>
             {t.aptCta}
