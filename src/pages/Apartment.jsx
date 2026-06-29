@@ -1,6 +1,51 @@
+import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { APARTMENTS } from "../data/apartments";
 import { ApartmentSEO } from "../components/SEO";
+
+function AptSlideshow({ images }) {
+  const [idx, setIdx] = useState(0);
+  const [preloaded, setPreloaded] = useState(new Set([0, 1]));
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setIdx((i) => {
+        const next = (i + 1) % images.length;
+        setPreloaded((s) => new Set([...s, next, (next + 1) % images.length]));
+        return next;
+      });
+    }, 4500);
+    return () => clearInterval(timer);
+  }, [images.length]);
+
+  return (
+    <div style={{ position: "relative", width: "100%", height: 520, overflow: "hidden", background: "#111" }}>
+      {images.map((src, i) =>
+        preloaded.has(i) ? (
+          <img
+            key={src}
+            src={src}
+            alt={`Cala di Forno ${i + 1}`}
+            style={{
+              position: "absolute", inset: 0, width: "100%", height: "100%",
+              objectFit: "cover", opacity: i === idx ? 1 : 0,
+              transition: "opacity 1.2s ease",
+            }}
+          />
+        ) : null
+      )}
+      <div style={{ position: "absolute", bottom: 16, left: "50%", transform: "translateX(-50%)", display: "flex", gap: 7 }}>
+        {images.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => { setIdx(i); setPreloaded((s) => new Set([...s, i, (i + 1) % images.length])); }}
+            style={{ width: 6, height: 6, borderRadius: "50%", border: "none", cursor: "pointer", padding: 0, background: i === idx ? "#fff" : "rgba(255,255,255,0.35)", transition: "background 0.3s" }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default function Apartment({ lang = "en" }) {
   const { id } = useParams();
@@ -41,23 +86,10 @@ export default function Apartment({ lang = "en" }) {
         <Link to="/#apartments" style={styles.backLink}>{backLabel}</Link>
       </div>
 
-      {/* Hero photo */}
+      {/* Slideshow */}
       <div style={{ maxWidth: 1000, margin: "0 auto", padding: "0 24px" }}>
-        <div style={styles.heroPhoto}>
-          <img src={apt.photo} alt={apt.name} style={styles.heroImg} />
-        </div>
+        <AptSlideshow images={apt.gallery.length > 1 ? apt.gallery : [apt.photo]} />
       </div>
-
-      {/* Gallery — additional photos when provided */}
-      {apt.gallery.length > 1 && (
-        <div style={{ maxWidth: 1000, margin: "4px auto 0", padding: "0 24px" }}>
-          <div style={styles.gallery}>
-            {apt.gallery.map((src, i) => (
-              <img key={i} src={src} alt={`${apt.name} ${i + 1}`} style={styles.galleryImg} loading="lazy" />
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* Content */}
       <div style={styles.content}>
@@ -173,29 +205,6 @@ const styles = {
     textDecoration: "none",
     fontFamily: "'DM Sans', sans-serif",
     textTransform: "uppercase",
-  },
-  heroPhoto: {
-    width: "100%",
-    height: "60vh",
-    overflow: "hidden",
-  },
-  heroImg: {
-    width: "100%",
-    height: "100%",
-    objectFit: "cover",
-    display: "block",
-  },
-  gallery: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-    gap: 4,
-    margin: "4px 0 0",
-  },
-  galleryImg: {
-    width: "100%",
-    height: 280,
-    objectFit: "cover",
-    display: "block",
   },
   content: {
     maxWidth: 1000,
