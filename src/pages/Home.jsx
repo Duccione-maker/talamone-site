@@ -582,12 +582,12 @@ export default function Home({ lang, setLang, scrollY }) {
 
           <div style={{ display: "flex", alignItems: "center", gap: 32 }} className="nav-desktop">
             {t.nav.map((item, i) => (
-              <span key={item} style={styles.navLink} onClick={() => handleNav(i)}>{item}</span>
+              <span key={item} style={{ ...styles.navLink, color: (scrollY > 60 || menuOpen) ? "#1a1a1a" : "#fff" }} onClick={() => handleNav(i)}>{item}</span>
             ))}
-            <div style={styles.langSwitch}>
+            <div style={{ ...styles.langSwitch, borderColor: (scrollY > 60 || menuOpen) ? "#c8bfb1" : "rgba(255,255,255,0.5)" }}>
               {["IT", "EN"].map((l) => (
                 <span key={l} onClick={() => setLang(l.toLowerCase())}
-                  style={{ ...styles.langBtn, ...(lang === l.toLowerCase() ? styles.langActive : {}) }}>
+                  style={{ ...styles.langBtn, color: lang === l.toLowerCase() ? "#f4efe8" : ((scrollY > 60 || menuOpen) ? "#8a7f72" : "rgba(255,255,255,0.7)"), ...(lang === l.toLowerCase() ? styles.langActive : {}) }}>
                   {l}
                 </span>
               ))}
@@ -595,15 +595,15 @@ export default function Home({ lang, setLang, scrollY }) {
           </div>
 
           <div style={{ display: "flex", alignItems: "center", gap: 12 }} className="nav-mobile">
-            <div style={styles.langSwitch}>
+            <div style={{ ...styles.langSwitch, borderColor: (scrollY > 60 || menuOpen) ? "#c8bfb1" : "rgba(255,255,255,0.5)" }}>
               {["IT", "EN"].map((l) => (
                 <span key={l} onClick={() => setLang(l.toLowerCase())}
-                  style={{ ...styles.langBtn, ...(lang === l.toLowerCase() ? styles.langActive : {}) }}>
+                  style={{ ...styles.langBtn, color: lang === l.toLowerCase() ? "#f4efe8" : ((scrollY > 60 || menuOpen) ? "#8a7f72" : "rgba(255,255,255,0.7)"), ...(lang === l.toLowerCase() ? styles.langActive : {}) }}>
                   {l}
                 </span>
               ))}
             </div>
-            <button onClick={() => setMenuOpen((o) => !o)} style={styles.hamburger} aria-label="Menu">
+            <button onClick={() => setMenuOpen((o) => !o)} style={{ ...styles.hamburger, color: (scrollY > 60 || menuOpen) ? "#1a1a1a" : "#fff" }} aria-label="Menu">
               {menuOpen ? "✕" : "☰"}
             </button>
           </div>
