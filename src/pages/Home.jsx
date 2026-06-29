@@ -701,13 +701,9 @@ export default function Home({ lang, setLang, scrollY }) {
 
       {/* SEA */}
       <section id="sea" style={{ ...styles.section, padding: "0 0 100px", overflow: "hidden" }}>
-        <div style={styles.seaHero}>
-          <div style={styles.seaPlaceholder}>
-            <div style={{ textAlign: "center", color: "#6b8fa8" }}>
-              <div style={{ fontSize: 11, letterSpacing: 4, marginBottom: 8, fontFamily: "'DM Sans', sans-serif" }}>FOTO IN ARRIVO</div>
-              <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 24, fontWeight: 300 }}>Il Mare</div>
-            </div>
-          </div>
+        <div style={styles.seaPhotos}>
+          <img src="/images/hero1.jpg" alt="Il mare di Talamone" style={styles.seaPhoto} />
+          <img src="/images/hero2.jpg" alt="Cala di Forno" style={styles.seaPhoto} />
         </div>
         <div style={styles.sectionInner}>
           <div style={{ paddingTop: 60 }}>
@@ -885,8 +881,8 @@ const styles = {
   aptFeature: { fontSize: 11, letterSpacing: 1, padding: "4px 10px", border: "1px solid #d4ccc0", color: "#6b6156" },
   aptCta: { background: "transparent", border: "1px solid #1a1a1a", color: "#1a1a1a", padding: "12px 28px", fontFamily: "'DM Sans', sans-serif", fontSize: 13, letterSpacing: 2, cursor: "pointer", alignSelf: "flex-start", transition: "all 0.3s ease" },
 
-  seaHero: { width: "100%", height: 480, overflow: "hidden", position: "relative" },
-  seaPlaceholder: { width: "100%", height: "100%", background: "#c8dde8", display: "flex", alignItems: "center", justifyContent: "center" },
+  seaPhotos: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 4, width: "100%", height: 480 },
+  seaPhoto: { width: "100%", height: "100%", objectFit: "cover", display: "block" },
 
   mapWrapper: { position: "relative", marginTop: 60, height: 420 },
   mapIframe: { width: "100%", height: "100%", border: "none", display: "block", filter: "grayscale(30%) contrast(1.05) brightness(0.9)" },
