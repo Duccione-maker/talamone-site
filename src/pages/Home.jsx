@@ -136,76 +136,51 @@ const T = {
 const CITY_NAMES = ["Orbetello", "Porto Santo Stefano", "Capalbio", "Grosseto", "Siena", "Roma"];
 const CITY_KM = [12, 22, 28, 46, 105, 175];
 
-// ─── APARTMENT GALLERY ───────────────────────────────────────────────────────
+// ─── APARTMENT SLIDESHOW (auto) ──────────────────────────────────────────────
 
-function AptGallery({ images }) {
-  const [lightbox, setLightbox] = useState(null);
+function AptSlideshow({ images }) {
+  const [idx, setIdx] = useState(0);
+  const [preloaded, setPreloaded] = useState(new Set([0, 1]));
 
   useEffect(() => {
-    if (lightbox === null) return;
-    const handler = (e) => {
-      if (e.key === "Escape") setLightbox(null);
-      if (e.key === "ArrowRight") setLightbox((i) => (i + 1) % images.length);
-      if (e.key === "ArrowLeft") setLightbox((i) => (i - 1 + images.length) % images.length);
-    };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, [lightbox, images.length]);
+    const timer = setInterval(() => {
+      setIdx((i) => {
+        const next = (i + 1) % images.length;
+        setPreloaded((s) => new Set([...s, next, (next + 1) % images.length]));
+        return next;
+      });
+    }, 4500);
+    return () => clearInterval(timer);
+  }, [images.length]);
 
   return (
-    <>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 4 }}>
-        {images.map((src, i) => (
-          <div
+    <div style={{ position: "relative", width: "100%", height: 520, overflow: "hidden", background: "#111" }}>
+      {images.map((src, i) =>
+        preloaded.has(i) ? (
+          <img
             key={src}
-            onClick={() => setLightbox(i)}
+            src={src}
+            alt={`Cala di Forno ${i + 1}`}
             style={{
-              overflow: "hidden", cursor: "zoom-in",
-              gridColumn: i === 0 ? "span 2" : "span 1",
-              height: i === 0 ? 360 : 220,
+              position: "absolute", inset: 0, width: "100%", height: "100%",
+              objectFit: "cover", opacity: i === idx ? 1 : 0,
+              transition: "opacity 1.2s ease",
             }}
-          >
-            <img
-              src={src}
-              alt={`Cala di Forno ${i + 1}`}
-              loading="lazy"
-              style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", transition: "transform 0.4s ease" }}
-              onMouseEnter={(e) => { e.currentTarget.style.transform = "scale(1.04)"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.transform = "scale(1)"; }}
-            />
-          </div>
+          />
+        ) : null
+      )}
+      <div style={{ position: "absolute", bottom: 16, left: "50%", transform: "translateX(-50%)", display: "flex", gap: 7 }}>
+        {images.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => { setIdx(i); setPreloaded((s) => new Set([...s, i, (i + 1) % images.length])); }}
+            style={{ width: 6, height: 6, borderRadius: "50%", border: "none", cursor: "pointer", padding: 0, background: i === idx ? "#fff" : "rgba(255,255,255,0.35)", transition: "background 0.3s" }}
+          />
         ))}
       </div>
-
-      {lightbox !== null && (
-        <div
-          onClick={() => setLightbox(null)}
-          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.93)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center" }}
-        >
-          <img
-            src={images[lightbox]}
-            alt={`Cala di Forno ${lightbox + 1}`}
-            onClick={(e) => e.stopPropagation()}
-            style={{ maxWidth: "90vw", maxHeight: "88vh", objectFit: "contain", display: "block" }}
-          />
-          <button onClick={(e) => { e.stopPropagation(); setLightbox((i) => (i - 1 + images.length) % images.length); }} style={lbArrow("left")}>‹</button>
-          <button onClick={(e) => { e.stopPropagation(); setLightbox((i) => (i + 1) % images.length); }} style={lbArrow("right")}>›</button>
-          <button onClick={() => setLightbox(null)} style={{ position: "fixed", top: 20, right: 24, background: "none", color: "#fff", border: "none", fontSize: 32, cursor: "pointer", lineHeight: 1 }}>✕</button>
-          <div style={{ position: "fixed", bottom: 20, left: "50%", transform: "translateX(-50%)", color: "rgba(255,255,255,0.5)", fontSize: 12, fontFamily: "'DM Sans', sans-serif", letterSpacing: 2 }}>
-            {lightbox + 1} / {images.length}
-          </div>
-        </div>
-      )}
-    </>
+    </div>
   );
 }
-
-const lbArrow = (side) => ({
-  position: "fixed", top: "50%", transform: "translateY(-50%)",
-  [side]: 16, background: "rgba(255,255,255,0.12)", color: "#fff",
-  border: "none", cursor: "pointer", fontSize: 36, lineHeight: 1,
-  padding: "12px 20px", transition: "background 0.2s",
-});
 
 // ─── BOOKING WIDGET ──────────────────────────────────────────────────────────
 
@@ -771,7 +746,7 @@ export default function Home({ lang, setLang, scrollY }) {
             {t.apt.features.map((f, i) => <span key={i} style={styles.aptFeature}>{f}</span>)}
           </div>
         </div>
-        <AptGallery images={APT_IMAGES} />
+        <AptSlideshow images={APT_IMAGES} />
         <div style={{ maxWidth: 1000, margin: "0 auto", padding: "32px 24px 80px" }}>
           <button style={styles.aptCta} onClick={() => navigate("/appartamenti/cala")}>
             {t.aptCta}
