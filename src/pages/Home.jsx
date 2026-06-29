@@ -8,12 +8,21 @@ import { APARTMENTS } from "../data/apartments";
 const APARTMENT = APARTMENTS[0]; // single apartment
 
 const APT_IMAGES = [
+  "/images/hero1.jpg",
+  "/images/hero2.jpg",
+  "/images/hero3.jpg",
+  "/images/hero4.jpg",
   "/images/esterno.jpg",
-  "/images/esterno2.jpg",
   "/images/matrimoniale.jpg",
+  "/images/divano%20letto.jpg",
+  "/images/divano%20letto%202.jpg",
   "/images/soggiorno%202.jpg",
+  "/images/piano%20cottura.jpg",
   "/images/primo%20bagno.jpg",
+  "/images/primo%20bagno%202.jpg",
   "/images/secondo%20bagno%201.jpg",
+  "/images/secondo%20bagno%202.jpg",
+  "/images/doccia.jpg",
 ];
 
 const HERO_IMAGES = [
