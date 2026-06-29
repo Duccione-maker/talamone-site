@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { APARTMENTS } from "../data/apartments";
 import { ApartmentSEO } from "../components/SEO";
@@ -7,16 +7,11 @@ function AptSlideshow({ images }) {
   const [idx, setIdx] = useState(0);
   const [preloaded, setPreloaded] = useState(new Set([0, 1]));
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setIdx((i) => {
-        const next = (i + 1) % images.length;
-        setPreloaded((s) => new Set([...s, next, (next + 1) % images.length]));
-        return next;
-      });
-    }, 4500);
-    return () => clearInterval(timer);
-  }, [images.length]);
+  const go = (n) => {
+    const next = (n + images.length) % images.length;
+    setPreloaded((s) => new Set([...s, next, (next + 1) % images.length]));
+    setIdx(next);
+  };
 
   return (
     <div style={{ position: "relative", width: "100%", height: 520, overflow: "hidden", background: "#111" }}>
@@ -29,23 +24,26 @@ function AptSlideshow({ images }) {
             style={{
               position: "absolute", inset: 0, width: "100%", height: "100%",
               objectFit: "cover", opacity: i === idx ? 1 : 0,
-              transition: "opacity 1.2s ease",
+              transition: "opacity 0.6s ease",
             }}
           />
         ) : null
       )}
-      <div style={{ position: "absolute", bottom: 16, left: "50%", transform: "translateX(-50%)", display: "flex", gap: 7 }}>
-        {images.map((_, i) => (
-          <button
-            key={i}
-            onClick={() => { setIdx(i); setPreloaded((s) => new Set([...s, i, (i + 1) % images.length])); }}
-            style={{ width: 6, height: 6, borderRadius: "50%", border: "none", cursor: "pointer", padding: 0, background: i === idx ? "#fff" : "rgba(255,255,255,0.35)", transition: "background 0.3s" }}
-          />
-        ))}
+      <button onClick={() => go(idx - 1)} style={arrow("left")}>‹</button>
+      <button onClick={() => go(idx + 1)} style={arrow("right")}>›</button>
+      <div style={{ position: "absolute", bottom: 16, left: "50%", transform: "translateX(-50%)", color: "rgba(255,255,255,0.7)", fontSize: 12, fontFamily: "'DM Sans', sans-serif", letterSpacing: 2 }}>
+        {idx + 1} / {images.length}
       </div>
     </div>
   );
 }
+
+const arrow = (side) => ({
+  position: "absolute", top: "50%", transform: "translateY(-50%)",
+  [side]: 16, background: "rgba(0,0,0,0.4)", color: "#fff",
+  border: "none", cursor: "pointer", fontSize: 32, lineHeight: 1,
+  padding: "10px 16px", zIndex: 2, transition: "background 0.2s",
+});
 
 export default function Apartment({ lang = "en" }) {
   const { id } = useParams();
