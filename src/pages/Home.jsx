@@ -8,8 +8,12 @@ import { APARTMENTS } from "../data/apartments";
 const APARTMENT = APARTMENTS[0]; // single apartment
 
 const APT_IMAGES = [
-  "/images/hero3.jpg",
-  "/images/hero4.jpg",
+  "/images/esterno.jpg",
+  "/images/esterno2.jpg",
+  "/images/matrimoniale.jpg",
+  "/images/soggiorno%202.jpg",
+  "/images/primo%20bagno.jpg",
+  "/images/secondo%20bagno%201.jpg",
 ];
 
 const HERO_IMAGES = [
