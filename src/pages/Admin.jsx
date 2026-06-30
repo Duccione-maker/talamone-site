@@ -76,44 +76,88 @@ export default function Admin() {
   const draftEmail = (payLink) => {
     const firstName = name ? name.split(" ")[0] : null;
     const dates = checkIn && checkOut ? `\n• Check-in: ${checkIn}\n• Check-out: ${checkOut}` : "";
-    const nightsLine = nights ? `\n• ${lang === "en" ? "Nights" : "Notti"}: ${nights}` : "";
-    const guestsLine = guests ? `\n• ${lang === "en" ? "Guests" : "Ospiti"}: ${guests}` : "";
-    const totalLine = total ? `\n• Total${lang === "en" ? "" : "e"}: €${total}` : "";
 
-    if (lang === "en") {
-      return `Dear ${firstName || "guest"},
+    const templates = {
+      it: {
+        greeting: `Gentile ${firstName || "ospite"},`,
+        intro: "Grazie per la tua richiesta di soggiorno a Cala di Forno Talamone.\n\nSiamo lieti di confermarti la disponibilità. Di seguito i dettagli della prenotazione:",
+        nights: `Notti`,
+        guests: `Ospiti`,
+        total: `Totale`,
+        cta: "Per completare la prenotazione clicca sul link qui sotto:",
+        disclaimer: "Il pagamento è gestito in modo sicuro da Stripe, leader mondiale nei pagamenti digitali. Non conserviamo nessun dato della tua carta. Il link è personale e valido per 23 ore.",
+        question: "Per qualsiasi domanda scrivici a info@notuscany.com",
+        bye: "A presto,",
+        team: "Il team di No Tuscany",
+      },
+      en: {
+        greeting: `Dear ${firstName || "guest"},`,
+        intro: "Thank you for your booking request at Cala di Forno Talamone.\n\nWe are pleased to confirm availability for your stay. Here are the details:",
+        nights: `Nights`,
+        guests: `Guests`,
+        total: `Total`,
+        cta: "To complete your booking, click the secure payment link below:",
+        disclaimer: "Payment is handled securely by Stripe, a world leader in digital payments. We do not store any of your card details. The link is personal and valid for 23 hours.",
+        question: "For any questions, write to us at info@notuscany.com",
+        bye: "See you soon,",
+        team: "The No Tuscany team",
+      },
+      de: {
+        greeting: `Liebe/r ${firstName || "Gast"},`,
+        intro: "Vielen Dank für Ihre Buchungsanfrage für Cala di Forno Talamone.\n\nWir freuen uns, Ihnen die Verfügbarkeit zu bestätigen. Hier sind die Details:",
+        nights: `Nächte`,
+        guests: `Gäste`,
+        total: `Gesamt`,
+        cta: "Um Ihre Buchung abzuschließen, klicken Sie bitte auf den sicheren Zahlungslink:",
+        disclaimer: "Die Zahlung wird sicher über Stripe abgewickelt, einem weltweit führenden Anbieter für digitale Zahlungen. Wir speichern keine Ihrer Kartendaten. Der Link ist persönlich und 23 Stunden gültig.",
+        question: "Bei Fragen schreiben Sie uns an info@notuscany.com",
+        bye: "Bis bald,",
+        team: "Das No Tuscany Team",
+      },
+      fr: {
+        greeting: `Cher/Chère ${firstName || "client(e)"},`,
+        intro: "Merci pour votre demande de séjour à Cala di Forno Talamone.\n\nNous avons le plaisir de vous confirmer la disponibilité. Voici les détails de votre réservation :",
+        nights: `Nuits`,
+        guests: `Voyageurs`,
+        total: `Total`,
+        cta: "Pour finaliser votre réservation, cliquez sur le lien de paiement sécurisé :",
+        disclaimer: "Le paiement est géré en toute sécurité par Stripe, leader mondial des paiements numériques. Nous ne conservons aucune donnée de votre carte. Le lien est personnel et valable 23 heures.",
+        question: "Pour toute question, écrivez-nous à info@notuscany.com",
+        bye: "À bientôt,",
+        team: "L'équipe No Tuscany",
+      },
+      es: {
+        greeting: `Estimado/a ${firstName || "huésped"},`,
+        intro: "Gracias por su solicitud de estancia en Cala di Forno Talamone.\n\nNos complace confirmarle la disponibilidad. A continuación los detalles de su reserva:",
+        nights: `Noches`,
+        guests: `Huéspedes`,
+        total: `Total`,
+        cta: "Para completar su reserva, haga clic en el enlace de pago seguro:",
+        disclaimer: "El pago es gestionado de forma segura por Stripe, líder mundial en pagos digitales. No almacenamos ningún dato de su tarjeta. El enlace es personal y válido durante 23 horas.",
+        question: "Para cualquier consulta escríbanos a info@notuscany.com",
+        bye: "Hasta pronto,",
+        team: "El equipo de No Tuscany",
+      },
+    };
 
-Thank you for your booking request at Cala di Forno Talamone.
+    const t = templates[lang] || templates.en;
+    const nightsLine = nights ? `\n• ${t.nights}: ${nights}` : "";
+    const guestsLine = guests ? `\n• ${t.guests}: ${guests}` : "";
+    const totalLine = total ? `\n• ${t.total}: €${total}` : "";
 
-We are pleased to confirm availability for your stay. Here are the details:${dates}${nightsLine}${guestsLine}${totalLine}
+    return `${t.greeting}
 
-To complete your booking, click the secure payment link below:
+${t.intro}${dates}${nightsLine}${guestsLine}${totalLine}
+
+${t.cta}
 ${payLink}
 
-Payment is handled securely by Stripe, a world leader in digital payments. We do not store any of your card details. The link is personal and valid for 23 hours.
+${t.disclaimer}
 
-For any questions, write to us at info@notuscany.com
+${t.question}
 
-See you soon,
-The No Tuscany team
-Cala di Forno · Talamone · notuscany.com`;
-    }
-
-    return `Gentile ${firstName || "ospite"},
-
-Grazie per la tua richiesta di soggiorno a Cala di Forno Talamone.
-
-Siamo lieti di confermarti la disponibilità. Di seguito i dettagli della prenotazione:${dates}${nightsLine}${guestsLine}${totalLine}
-
-Per completare la prenotazione clicca sul link qui sotto:
-${payLink}
-
-Il pagamento è gestito in modo sicuro da Stripe, leader mondiale nei pagamenti digitali. Non conserviamo nessun dato della tua carta. Il link è personale e valido per 23 ore.
-
-Per qualsiasi domanda scrivici a info@notuscany.com
-
-A presto,
-Il team di No Tuscany
+${t.bye}
+${t.team}
 Cala di Forno · Talamone · notuscany.com`;
   };
 
