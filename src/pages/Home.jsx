@@ -174,6 +174,7 @@ function AptSlideshow({ images }) {
           <button
             key={i}
             onClick={() => { setIdx(i); setPreloaded((s) => new Set([...s, i, (i + 1) % images.length])); }}
+            aria-label={`Foto ${i + 1}`}
             style={{ width: 6, height: 6, borderRadius: "50%", border: "none", cursor: "pointer", padding: 0, background: i === idx ? "#fff" : "rgba(255,255,255,0.35)", transition: "background 0.3s" }}
           />
         ))}
@@ -376,15 +377,16 @@ function BookingWidget({ t, lang }) {
 
         {/* Adulti */}
         <div style={styles.fieldGroup}>
-          <label style={styles.fieldLabel}>{isIt ? "ADULTI" : "ADULTS"}</label>
-          <select value={adults} onChange={(e) => setAdults(Number(e.target.value))} style={styles.fieldInput}>
+          <label htmlFor="sel-adults" style={styles.fieldLabel}>{isIt ? "ADULTI" : "ADULTS"}</label>
+          <select id="sel-adults" value={adults} onChange={(e) => setAdults(Number(e.target.value))} style={styles.fieldInput}>
             {[1, 2, 3, 4].map((n) => <option key={n} value={n}>{n}</option>)}
           </select>
         </div>
 
         <div style={styles.fieldGroup}>
-          <label style={styles.fieldLabel}>{isIt ? "BAMBINI" : "CHILDREN"}</label>
+          <label htmlFor="sel-children" style={styles.fieldLabel}>{isIt ? "BAMBINI" : "CHILDREN"}</label>
           <select
+            id="sel-children"
             value={childAges.length}
             onChange={(e) => {
               const n = Number(e.target.value);
@@ -412,6 +414,7 @@ function BookingWidget({ t, lang }) {
                 </span>
                 <select
                   value={age}
+                  aria-label={isIt ? `Età bambino ${i + 1}` : `Child ${i + 1} age`}
                   onChange={(e) => {
                     const next = [...childAges];
                     next[i] = Number(e.target.value);
