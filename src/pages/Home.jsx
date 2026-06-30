@@ -271,6 +271,8 @@ function BookingWidget({ t, lang }) {
     setStatus("submitting");
     const discountCents = calcDiscount(availResult.totalCents);
     const finalTotal = availResult.totalCents - discountCents + cityTaxCents + cleaningCents;
+    const totalStr = (finalTotal / 100).toFixed(2);
+    const adminUrl = `https://talamone.notuscany.com/admin?name=${encodeURIComponent(guestName)}&email=${encodeURIComponent(guestEmail)}&checkin=${checkIn}&checkout=${checkOut}&nights=${availResult.nights}&guests=${totalGuests}&total=${totalStr}`;
     const body = new URLSearchParams({
       "form-name": "booking-request",
       name: guestName,
@@ -280,8 +282,9 @@ function BookingWidget({ t, lang }) {
       checkout: checkOut,
       nights: availResult.nights,
       guests: totalGuests,
-      total: `€${(finalTotal / 100).toFixed(2)}`,
+      total: `€${totalStr}`,
       discount: discountStatus === "valid" ? discountCode.trim().toUpperCase() : "",
+      admin_url: adminUrl,
     });
     try {
       await fetch("/", { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: body.toString() });

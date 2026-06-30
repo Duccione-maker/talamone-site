@@ -26,6 +26,7 @@ export default function Admin() {
   const [status, setStatus] = useState(null);
   const [link, setLink] = useState("");
   const [copied, setCopied] = useState(false);
+  const [emailCopied, setEmailCopied] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
   const handleGenerate = async () => {
@@ -69,6 +70,36 @@ export default function Admin() {
     navigator.clipboard.writeText(link);
     setCopied(true);
     setTimeout(() => setCopied(false), 2500);
+  };
+
+  const draftEmail = (payLink) => {
+    const greeting = name ? `Gentile ${name.split(" ")[0]},` : "Gentile ospite,";
+    const dates = checkIn && checkOut ? `\n• Check-in: ${checkIn}\n• Check-out: ${checkOut}` : "";
+    const nightsLine = nights ? `\n• Notti: ${nights}` : "";
+    const guestsLine = guests ? `\n• Ospiti: ${guests}` : "";
+    const totalLine = total ? `\n• Totale: €${total}` : "";
+    return `${greeting}
+
+Grazie per la tua richiesta di soggiorno a Cala di Forno Talamone.
+
+Siamo lieti di confermarti la disponibilità. Di seguito i dettagli della prenotazione:${dates}${nightsLine}${guestsLine}${totalLine}
+
+Per completare la prenotazione clicca sul link qui sotto:
+${payLink}
+
+Il pagamento è gestito in modo sicuro da Stripe, leader mondiale nei pagamenti digitali. Non conserviamo nessun dato della tua carta. Il link è personale e valido per 23 ore.
+
+Per qualsiasi domanda scrivici a info@notuscany.com
+
+A presto,
+Sandro
+Cala di Forno · Talamone · notuscany.com`;
+  };
+
+  const handleEmailCopy = () => {
+    navigator.clipboard.writeText(draftEmail(link));
+    setEmailCopied(true);
+    setTimeout(() => setEmailCopied(false), 2500);
   };
 
   return (
@@ -159,25 +190,39 @@ export default function Admin() {
           </button>
 
           {status === "done" && link && (
-            <div style={{ background: "#f0faf0", border: "1px solid #b8d8b8", padding: 20 }}>
-              <div style={{ fontSize: 11, letterSpacing: 2, color: "#4a7a4a", marginBottom: 10, fontFamily: "'DM Sans', sans-serif" }}>
-                ✓ LINK GENERATO — VALIDO 23 ORE
+            <>
+              <div style={{ background: "#f0faf0", border: "1px solid #b8d8b8", padding: 20 }}>
+                <div style={{ fontSize: 11, letterSpacing: 2, color: "#4a7a4a", marginBottom: 10, fontFamily: "'DM Sans', sans-serif" }}>
+                  ✓ LINK GENERATO — VALIDO 23 ORE
+                </div>
+                <div style={{ fontSize: 13, wordBreak: "break-all", color: "#2a2a2a", marginBottom: 14, fontFamily: "monospace", lineHeight: 1.5 }}>
+                  {link}
+                </div>
+                <button
+                  onClick={handleCopy}
+                  style={{ background: "#4a7a4a", color: "#fff", border: "none", padding: "9px 18px", fontFamily: "'DM Sans', sans-serif", fontSize: 12, letterSpacing: 1, cursor: "pointer" }}
+                >
+                  {copied ? "✓ COPIATO!" : "COPIA LINK"}
+                </button>
               </div>
-              <div style={{ fontSize: 12, wordBreak: "break-all", color: "#2a2a2a", marginBottom: 14, fontFamily: "monospace", lineHeight: 1.5 }}>
-                {link}
+
+              <div style={{ border: "1px solid #e0d8cc", padding: 20 }}>
+                <div style={{ fontSize: 11, letterSpacing: 2, color: "#8a7f72", marginBottom: 12, fontFamily: "'DM Sans', sans-serif" }}>
+                  BOZZA EMAIL DA INVIARE ALL'OSPITE
+                </div>
+                <textarea
+                  readOnly
+                  value={draftEmail(link)}
+                  style={{ width: "100%", minHeight: 280, padding: 12, fontSize: 13, fontFamily: "'DM Sans', sans-serif", lineHeight: 1.7, border: "1px solid #e0d8cc", background: "#faf7f3", color: "#1a1a1a", resize: "vertical", boxSizing: "border-box" }}
+                />
+                <button
+                  onClick={handleEmailCopy}
+                  style={{ marginTop: 10, background: "#1a1a1a", color: "#f4efe8", border: "none", padding: "9px 18px", fontFamily: "'DM Sans', sans-serif", fontSize: 12, letterSpacing: 1, cursor: "pointer" }}
+                >
+                  {emailCopied ? "✓ TESTO COPIATO!" : "COPIA TESTO EMAIL"}
+                </button>
               </div>
-              <button
-                onClick={handleCopy}
-                style={{
-                  background: "#4a7a4a", color: "#fff", border: "none",
-                  padding: "9px 18px", fontFamily: "'DM Sans', sans-serif",
-                  fontSize: 12, letterSpacing: 1, cursor: "pointer",
-                  transition: "background 0.2s",
-                }}
-              >
-                {copied ? "✓ COPIATO!" : "COPIA LINK"}
-              </button>
-            </div>
+            </>
           )}
 
           {status === "error" && (
