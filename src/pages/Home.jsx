@@ -169,14 +169,16 @@ function AptSlideshow({ images }) {
           />
         ) : null
       )}
-      <div style={{ position: "absolute", bottom: 16, left: "50%", transform: "translateX(-50%)", display: "flex", gap: 7 }}>
+      <div style={{ position: "absolute", bottom: 8, left: "50%", transform: "translateX(-50%)", display: "flex" }}>
         {images.map((_, i) => (
           <button
             key={i}
             onClick={() => { setIdx(i); setPreloaded((s) => new Set([...s, i, (i + 1) % images.length])); }}
             aria-label={`Foto ${i + 1}`}
-            style={{ width: 6, height: 6, borderRadius: "50%", border: "none", cursor: "pointer", padding: 0, background: i === idx ? "#fff" : "rgba(255,255,255,0.35)", transition: "background 0.3s" }}
-          />
+            style={{ width: 24, height: 24, borderRadius: "50%", border: "none", cursor: "pointer", padding: 0, background: "transparent", display: "flex", alignItems: "center", justifyContent: "center" }}
+          >
+            <span style={{ width: 6, height: 6, borderRadius: "50%", background: i === idx ? "#fff" : "rgba(255,255,255,0.35)", display: "block", transition: "background 0.3s" }} />
+          </button>
         ))}
       </div>
     </div>
@@ -404,7 +406,7 @@ function BookingWidget({ t, lang }) {
 
         {childAges.length > 0 && (
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            <div style={{ fontSize: 10, letterSpacing: 1.5, color: "#8a7f72", fontFamily: "'DM Sans', sans-serif" }}>
+            <div style={{ fontSize: 10, letterSpacing: 1.5, color: "#5a5248", fontFamily: "'DM Sans', sans-serif" }}>
               {isIt ? "ETÀ DEI BAMBINI" : "CHILDREN'S AGES"}
             </div>
             {childAges.map((age, i) => (
@@ -428,7 +430,7 @@ function BookingWidget({ t, lang }) {
                     </option>
                   ))}
                 </select>
-                <span style={{ fontSize: 10, color: age >= 14 ? "#a0522d" : "#8a7f72", fontFamily: "'DM Sans', sans-serif", width: 60, textAlign: "right" }}>
+                <span style={{ fontSize: 10, color: age >= 14 ? "#a0522d" : "#5a5248", fontFamily: "'DM Sans', sans-serif", width: 60, textAlign: "right" }}>
                   {age >= 14
                     ? (isIt ? "tassa sì" : "tax applies")
                     : (isIt ? "esentato" : "exempt")}
@@ -450,7 +452,7 @@ function BookingWidget({ t, lang }) {
             style={{ ...styles.fieldInput, textTransform: "uppercase", letterSpacing: 2 }}
           />
           {discountStatus === "checking" && (
-            <div style={{ fontSize: 11, color: "#8a7f72", marginTop: 4 }}>
+            <div style={{ fontSize: 11, color: "#5a5248", marginTop: 4 }}>
               {isIt ? "Verifica in corso..." : "Checking..."}
             </div>
           )}
@@ -473,7 +475,7 @@ function BookingWidget({ t, lang }) {
           <div style={styles.priceBreakdown}>
             <div style={styles.priceRow}>
               <span>{isIt ? `Alloggio (${nights} notti)` : `Accommodation (${nights} nights)`}</span>
-              <span style={{ color: "#8a7f72", fontSize: 11 }}>{isIt ? "da verificare" : "to be confirmed"}</span>
+              <span style={{ color: "#5a5248", fontSize: 11 }}>{isIt ? "da verificare" : "to be confirmed"}</span>
             </div>
             {discountStatus === "valid" && discountData && (
               <div style={{ ...styles.priceRow, color: "#4a7a4a" }}>
@@ -482,7 +484,7 @@ function BookingWidget({ t, lang }) {
                     ? (isIt ? `Sconto ${discountData.discount_value}%` : `Discount ${discountData.discount_value}%`)
                     : (isIt ? "Sconto fisso" : "Fixed discount")}
                 </span>
-                <span style={{ color: "#8a7f72", fontSize: 11 }}>{isIt ? "calcolato al checkout" : "applied at checkout"}</span>
+                <span style={{ color: "#5a5248", fontSize: 11 }}>{isIt ? "calcolato al checkout" : "applied at checkout"}</span>
               </div>
             )}
             <div style={styles.priceRow}>
@@ -546,7 +548,7 @@ function BookingWidget({ t, lang }) {
                   <span>€{(finalTotal / 100).toFixed(2)}</span>
                 </div>
               </div>
-              <div style={{ fontSize: 12, color: "#8a7f72", fontStyle: "italic" }}>
+              <div style={{ fontSize: 12, color: "#5a5248", fontStyle: "italic" }}>
                 {isIt
                   ? "Lascia i tuoi contatti. Ti confermiamo la disponibilità entro 24h."
                   : "Leave your details. We'll confirm availability within 24 hours."}
@@ -741,7 +743,7 @@ export default function Home({ lang, setLang, scrollY }) {
             <div style={{ ...styles.langSwitch, borderColor: (scrollY > 60 || menuOpen) ? "#c8bfb1" : "rgba(255,255,255,0.5)" }}>
               {["IT", "EN"].map((l) => (
                 <span key={l} onClick={() => setLang(l.toLowerCase())}
-                  style={{ ...styles.langBtn, color: lang === l.toLowerCase() ? "#f4efe8" : ((scrollY > 60 || menuOpen) ? "#8a7f72" : "rgba(255,255,255,0.7)"), ...(lang === l.toLowerCase() ? styles.langActive : {}) }}>
+                  style={{ ...styles.langBtn, color: lang === l.toLowerCase() ? "#f4efe8" : ((scrollY > 60 || menuOpen) ? "#5a5248" : "rgba(255,255,255,0.7)"), ...(lang === l.toLowerCase() ? styles.langActive : {}) }}>
                   {l}
                 </span>
               ))}
@@ -752,7 +754,7 @@ export default function Home({ lang, setLang, scrollY }) {
             <div style={{ ...styles.langSwitch, borderColor: (scrollY > 60 || menuOpen) ? "#c8bfb1" : "rgba(255,255,255,0.5)" }}>
               {["IT", "EN"].map((l) => (
                 <span key={l} onClick={() => setLang(l.toLowerCase())}
-                  style={{ ...styles.langBtn, color: lang === l.toLowerCase() ? "#f4efe8" : ((scrollY > 60 || menuOpen) ? "#8a7f72" : "rgba(255,255,255,0.7)"), ...(lang === l.toLowerCase() ? styles.langActive : {}) }}>
+                  style={{ ...styles.langBtn, color: lang === l.toLowerCase() ? "#f4efe8" : ((scrollY > 60 || menuOpen) ? "#5a5248" : "rgba(255,255,255,0.7)"), ...(lang === l.toLowerCase() ? styles.langActive : {}) }}>
                   {l}
                 </span>
               ))}
@@ -867,7 +869,7 @@ export default function Home({ lang, setLang, scrollY }) {
       {/* POSITION */}
       <section id="position" style={{ ...styles.section, background: "#1a1a1a" }}>
         <div style={styles.sectionInner}>
-          <div style={{ ...styles.sectionLabel, color: "#8a7f72" }}>{t.posLabel}</div>
+          <div style={{ ...styles.sectionLabel, color: "#a89e91" }}>{t.posLabel}</div>
           <h2 style={{ ...styles.sectionTitle, color: "#f4efe8" }}>{t.posTitle1}<br />{t.posTitle2}</h2>
           <p style={{ fontFamily: "'DM Sans', sans-serif", color: "#a89e91", fontSize: 16, maxWidth: 600, lineHeight: 1.7, marginBottom: 48 }}>
             {t.posDesc}
@@ -906,7 +908,7 @@ export default function Home({ lang, setLang, scrollY }) {
       <section style={{ padding: "80px 24px", borderTop: "1px solid #c8bfb1", borderBottom: "1px solid #c8bfb1" }}>
         <div style={{ ...styles.sectionInner, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 60, alignItems: "center" }}>
           <div>
-            <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, letterSpacing: 4, color: "#8a7f72", marginBottom: 16 }}>NETWORK</div>
+            <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, letterSpacing: 4, color: "#5a5248", marginBottom: 16 }}>NETWORK</div>
             <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 32, fontWeight: 600, letterSpacing: 2, marginBottom: 8 }}>NO TUSCANY</div>
             <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, fontStyle: "italic", color: "#6b6156", marginBottom: 24 }}>The Local Insider</div>
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 15, color: "#4a4039", lineHeight: 1.8, marginBottom: 16 }}>{t.netIntro}</p>
@@ -917,7 +919,7 @@ export default function Home({ lang, setLang, scrollY }) {
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: "#6b6156", lineHeight: 1.8 }}>{t.netDesc}</p>
           </div>
           <div style={{ background: "#1a1a1a", padding: 40, display: "flex", flexDirection: "column", gap: 20 }}>
-            <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, letterSpacing: 4, color: "#8a7f72" }}>{t.netGuests}</div>
+            <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, letterSpacing: 4, color: "#a89e91" }}>{t.netGuests}</div>
             <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 28, fontWeight: 300, color: "#f4efe8" }}>Mi Manda Duccio</div>
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: "#a89e91", lineHeight: 1.8 }}>{t.netGuide}</p>
             <a href="https://notuscany.com" target="_blank" rel="noopener noreferrer"
@@ -994,7 +996,7 @@ const styles = {
   navLogo: { height: 36, width: "auto", display: "block", transition: "opacity 0.3s ease" },
   navLink: { fontSize: 13, letterSpacing: 1, cursor: "pointer", borderBottom: "1px solid transparent", paddingBottom: 2, transition: "border-color 0.2s", fontWeight: 400 },
   langSwitch: { display: "flex", gap: 0, border: "1px solid #c8bfb1", marginLeft: 8 },
-  langBtn: { padding: "4px 10px", fontSize: 11, letterSpacing: 1, cursor: "pointer", transition: "all 0.2s", color: "#8a7f72" },
+  langBtn: { padding: "4px 10px", fontSize: 11, letterSpacing: 1, cursor: "pointer", transition: "all 0.2s", color: "#5a5248" },
   langActive: { background: "#1a1a1a", color: "#f4efe8" },
 
   hero: { minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", background: "#1a1a1a", padding: "0 24px", textAlign: "center", overflow: "hidden" },
@@ -1016,7 +1018,7 @@ const styles = {
 
   section: { padding: "100px 24px" },
   sectionInner: { maxWidth: 1000, margin: "0 auto" },
-  sectionLabel: { fontSize: 11, letterSpacing: 4, color: "#8a7f72", marginBottom: 16, textTransform: "uppercase" },
+  sectionLabel: { fontSize: 11, letterSpacing: 4, color: "#5a5248", marginBottom: 16, textTransform: "uppercase" },
   sectionTitle: { fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(28px, 4vw, 44px)", fontWeight: 400, lineHeight: 1.2, marginBottom: 48, color: "#1a1a1a" },
 
   aptDetail: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 48, alignItems: "start" },
@@ -1040,19 +1042,19 @@ const styles = {
   cityRow: { display: "grid", gridTemplateColumns: "160px 1fr 60px 1fr", alignItems: "center", gap: 16, padding: "16px 0", borderBottom: "1px solid #2a2a2a" },
   cityName: { fontFamily: "'Cormorant Garamond', serif", fontSize: 22, fontWeight: 400, color: "#f4efe8" },
   cityDots: { borderBottom: "1px dotted #444", height: 1 },
-  cityKm: { fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: "#8a7f72", textAlign: "right" },
-  cityHighlight: { fontSize: 13, color: "#6b6156", fontStyle: "italic" },
+  cityKm: { fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: "#a89e91", textAlign: "right" },
+  cityHighlight: { fontSize: 13, color: "#a89e91", fontStyle: "italic" },
 
   bookingWidget: { border: "1px solid #1a1a1a", padding: 40, maxWidth: 720 },
   bookingTitle: { fontFamily: "'Cormorant Garamond', serif", fontSize: 24, fontWeight: 400, marginBottom: 32 },
   bookingFields: { display: "flex", flexDirection: "column", gap: 20 },
   fieldGroup: { display: "flex", flexDirection: "column", gap: 6 },
-  fieldLabel: { fontSize: 11, letterSpacing: 2, color: "#8a7f72", textTransform: "uppercase" },
+  fieldLabel: { fontSize: 11, letterSpacing: 2, color: "#5a5248", textTransform: "uppercase" },
   fieldInput: { border: "none", borderBottom: "1px solid #c8bfb1", background: "transparent", padding: "10px 0", fontSize: 16, outline: "none", fontFamily: "'DM Sans', sans-serif", color: "#1a1a1a" },
   calendarWrapper: { borderTop: "1px solid #e0d8cc", borderBottom: "1px solid #e0d8cc", padding: "20px 0", position: "relative" },
-  calendarLoading: { fontSize: 12, color: "#8a7f72", letterSpacing: 1, marginBottom: 12, fontFamily: "'DM Sans', sans-serif" },
+  calendarLoading: { fontSize: 12, color: "#5a5248", letterSpacing: 1, marginBottom: 12, fontFamily: "'DM Sans', sans-serif" },
   calendarLegend: { display: "flex", gap: 20, marginTop: 12, marginBottom: 4, flexWrap: "wrap" },
-  legendItem: { display: "flex", alignItems: "center", gap: 7, fontSize: 11, color: "#8a7f72", fontFamily: "'DM Sans', sans-serif", letterSpacing: 1 },
+  legendItem: { display: "flex", alignItems: "center", gap: 7, fontSize: 11, color: "#5a5248", fontFamily: "'DM Sans', sans-serif", letterSpacing: 1 },
   legendDot: { width: 14, height: 14, flexShrink: 0 },
   rangeLabel: { fontSize: 13, color: "#4a4039", fontFamily: "'DM Sans', sans-serif", marginTop: 12, paddingTop: 12, borderTop: "1px solid #e0d8cc" },
   priceBreakdown: { marginTop: 12, padding: "14px 16px", background: "#f9f6f1", border: "1px solid #e0d8cc", display: "flex", flexDirection: "column", gap: 8 },
@@ -1062,8 +1064,8 @@ const styles = {
   footer: { borderTop: "1px solid #c8bfb1", padding: "60px 24px" },
   footerInner: { maxWidth: 1000, margin: "0 auto", display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "flex-start", gap: 32 },
   footerLogo: { fontFamily: "'Cormorant Garamond', serif", fontSize: 18, fontWeight: 600, letterSpacing: 4, marginBottom: 4 },
-  footerSub: { fontSize: 12, color: "#8a7f72" },
+  footerSub: { fontSize: 12, color: "#5a5248" },
   footerContact: { fontSize: 13, color: "#6b6156", lineHeight: 1.8 },
   whatsappBtn: { display: "inline-flex", alignItems: "center", gap: 8, marginTop: 12, padding: "10px 20px", background: "#25D366", color: "#fff", textDecoration: "none", fontSize: 13, letterSpacing: 1, fontFamily: "'DM Sans', sans-serif" },
-  footerBottom: { width: "100%", fontSize: 11, color: "#8a7f72", marginTop: 24, paddingTop: 24, borderTop: "1px solid #e0d8cc" },
+  footerBottom: { width: "100%", fontSize: 11, color: "#5a5248", marginTop: 24, paddingTop: 24, borderTop: "1px solid #e0d8cc" },
 };
