@@ -272,7 +272,7 @@ function BookingWidget({ t, lang }) {
     const discountCents = calcDiscount(availResult.totalCents);
     const finalTotal = availResult.totalCents - discountCents + cityTaxCents + cleaningCents;
     const totalStr = (finalTotal / 100).toFixed(2);
-    const adminUrl = `https://talamone.notuscany.com/admin?name=${encodeURIComponent(guestName)}&email=${encodeURIComponent(guestEmail)}&checkin=${checkIn}&checkout=${checkOut}&nights=${availResult.nights}&guests=${totalGuests}&total=${totalStr}`;
+    const adminUrl = `https://talamone.notuscany.com/admin?name=${encodeURIComponent(guestName)}&email=${encodeURIComponent(guestEmail)}&checkin=${checkIn}&checkout=${checkOut}&nights=${availResult.nights}&guests=${totalGuests}&total=${totalStr}&lang=${lang}`;
     const body = new URLSearchParams({
       "form-name": "booking-request",
       name: guestName,

@@ -22,6 +22,7 @@ export default function Admin() {
   const [nights, setNights] = useState(params.get("nights") || "");
   const [guests, setGuests] = useState(params.get("guests") || "");
   const [total, setTotal] = useState(params.get("total")?.replace("€", "") || "");
+  const lang = params.get("lang") || "it";
 
   const [status, setStatus] = useState(null);
   const [link, setLink] = useState("");
@@ -73,12 +74,32 @@ export default function Admin() {
   };
 
   const draftEmail = (payLink) => {
-    const greeting = name ? `Gentile ${name.split(" ")[0]},` : "Gentile ospite,";
+    const firstName = name ? name.split(" ")[0] : null;
     const dates = checkIn && checkOut ? `\n• Check-in: ${checkIn}\n• Check-out: ${checkOut}` : "";
-    const nightsLine = nights ? `\n• Notti: ${nights}` : "";
-    const guestsLine = guests ? `\n• Ospiti: ${guests}` : "";
-    const totalLine = total ? `\n• Totale: €${total}` : "";
-    return `${greeting}
+    const nightsLine = nights ? `\n• ${lang === "en" ? "Nights" : "Notti"}: ${nights}` : "";
+    const guestsLine = guests ? `\n• ${lang === "en" ? "Guests" : "Ospiti"}: ${guests}` : "";
+    const totalLine = total ? `\n• Total${lang === "en" ? "" : "e"}: €${total}` : "";
+
+    if (lang === "en") {
+      return `Dear ${firstName || "guest"},
+
+Thank you for your booking request at Cala di Forno Talamone.
+
+We are pleased to confirm availability for your stay. Here are the details:${dates}${nightsLine}${guestsLine}${totalLine}
+
+To complete your booking, click the secure payment link below:
+${payLink}
+
+Payment is handled securely by Stripe, a world leader in digital payments. We do not store any of your card details. The link is personal and valid for 23 hours.
+
+For any questions, write to us at info@notuscany.com
+
+See you soon,
+The No Tuscany team
+Cala di Forno · Talamone · notuscany.com`;
+    }
+
+    return `Gentile ${firstName || "ospite"},
 
 Grazie per la tua richiesta di soggiorno a Cala di Forno Talamone.
 
