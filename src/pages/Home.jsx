@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { HomeSEO } from "../components/SEO";
 import { DayPicker } from "react-day-picker";
@@ -691,14 +691,32 @@ const calendarCss = `
 export default function Home({ lang, setLang, scrollY }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeHero, setActiveHero] = useState(0);
+  const [preloadedHero, setPreloadedHero] = useState(new Set([0, 1]));
+  const mapRef = useRef(null);
+  const [mapVisible, setMapVisible] = useState(false);
   const navigate = useNavigate();
   const t = T[lang] || T.en;
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setActiveHero((i) => (i + 1) % HERO_IMAGES.length);
+      setActiveHero((i) => {
+        const next = (i + 1) % HERO_IMAGES.length;
+        setPreloadedHero((s) => new Set([...s, next, (next + 1) % HERO_IMAGES.length]));
+        return next;
+      });
     }, 5000);
     return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    const el = mapRef.current;
+    if (!el || !window.IntersectionObserver) { setMapVisible(true); return; }
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setMapVisible(true); obs.disconnect(); } },
+      { rootMargin: "200px" }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
   }, []);
 
   const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
@@ -732,6 +750,8 @@ export default function Home({ lang, setLang, scrollY }) {
             <img
               src={(scrollY > 60 || menuOpen) ? "/images/notuscany-logo-light.png" : "/images/notuscany-logo.png"}
               alt="No Tuscany"
+              width="280"
+              height="98"
               style={styles.navLogo}
             />
           </a>
@@ -776,18 +796,20 @@ export default function Home({ lang, setLang, scrollY }) {
 
       {/* HERO */}
       <section id="hero" style={styles.hero}>
-        {/* Slideshow images */}
-        {HERO_IMAGES.map((src, i) => (
-          <img
-            key={src}
-            src={src}
-            alt=""
-            style={{
-              ...styles.heroImg,
-              opacity: i === activeHero ? 1 : 0,
-            }}
-          />
-        ))}
+        {/* Slideshow images — lazy: only current + next are loaded */}
+        {HERO_IMAGES.map((src, i) =>
+          preloadedHero.has(i) ? (
+            <img
+              key={src}
+              src={src}
+              alt=""
+              style={{
+                ...styles.heroImg,
+                opacity: i === activeHero ? 1 : 0,
+              }}
+            />
+          ) : null
+        )}
         {/* Dark overlay for text readability */}
         <div style={styles.heroOverlay} />
         {/* Content */}
@@ -804,7 +826,10 @@ export default function Home({ lang, setLang, scrollY }) {
             {HERO_IMAGES.map((_, i) => (
               <button
                 key={i}
-                onClick={() => setActiveHero(i)}
+                onClick={() => {
+                  setActiveHero(i);
+                  setPreloadedHero((s) => new Set([...s, i, (i + 1) % HERO_IMAGES.length]));
+                }}
                 style={{ ...styles.heroDot, opacity: i === activeHero ? 1 : 0.35 }}
                 aria-label={`Foto ${i + 1}`}
               />
@@ -886,12 +911,11 @@ export default function Home({ lang, setLang, scrollY }) {
           </div>
         </div>
 
-        <div style={styles.mapWrapper}>
+        <div ref={mapRef} style={styles.mapWrapper}>
           <iframe
             title="Cala di Forno — Talamone"
-            src="https://www.openstreetmap.org/export/embed.html?bbox=11.10%2C42.52%2C11.18%2C42.59&layer=mapnik&marker=42.5524%2C11.1362"
+            src={mapVisible ? "https://www.openstreetmap.org/export/embed.html?bbox=11.10%2C42.52%2C11.18%2C42.59&layer=mapnik&marker=42.5524%2C11.1362" : undefined}
             style={styles.mapIframe}
-            loading="lazy"
           />
           <a
             href="https://www.openstreetmap.org/?mlat=42.5524&mlon=11.1362#map=14/42.5524/11.1362"
