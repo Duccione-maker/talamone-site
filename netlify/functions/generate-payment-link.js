@@ -66,9 +66,18 @@ exports.handler = async (event) => {
       cancel_url: `${siteUrl}/#booking`,
     });
 
+    // Shorten the Stripe URL via is.gd (no API key needed)
+    let shortUrl = session.url;
+    try {
+      const shortRes = await fetch(`https://is.gd/create.php?format=simple&url=${encodeURIComponent(session.url)}`);
+      if (shortRes.ok) shortUrl = (await shortRes.text()).trim();
+    } catch {
+      // fallback to full URL if shortening fails
+    }
+
     return {
       statusCode: 200,
-      body: JSON.stringify({ url: session.url }),
+      body: JSON.stringify({ url: shortUrl, fullUrl: session.url }),
     };
   } catch (err) {
     console.error("generate-payment-link error:", err.message);
