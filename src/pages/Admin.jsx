@@ -92,7 +92,7 @@ Il pagamento è gestito in modo sicuro da Stripe, leader mondiale nei pagamenti 
 Per qualsiasi domanda scrivici a info@notuscany.com
 
 A presto,
-No Tuscany
+Il team di No Tuscany
 Cala di Forno · Talamone · notuscany.com`;
   };
 
