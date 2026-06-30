@@ -66,11 +66,12 @@ exports.handler = async (event) => {
       cancel_url: `${siteUrl}/#booking`,
     });
 
-    // Shorten the Stripe URL via is.gd (no API key needed)
+    // Shorten the Stripe URL via TinyURL (no API key needed)
     let shortUrl = session.url;
     try {
-      const shortRes = await fetch(`https://is.gd/create.php?format=simple&url=${encodeURIComponent(session.url)}`);
-      if (shortRes.ok) shortUrl = (await shortRes.text()).trim();
+      const shortRes = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(session.url)}`);
+      const text = (await shortRes.text()).trim();
+      if (shortRes.ok && text.startsWith("http")) shortUrl = text;
     } catch {
       // fallback to full URL if shortening fails
     }
