@@ -67,8 +67,8 @@ const T = {
     bookDesc:
       "Prenota qui per il miglior prezzo garantito. Nessuna commissione, nessuna piattaforma. Solo tu e Cala di Forno.",
     bookWidget: "Prenota",
-    bookBtn: "Prenota e paga →",
-    bookChecking: "Verifica disponibilità...",
+    bookBtn: "Verifica disponibilità →",
+    bookChecking: "Verifica in corso...",
     bookUnavailable: "Date non disponibili. Prova altre date.",
     bookMinNights: "Soggiorno minimo 5 notti.",
     bookError: "Errore. Riprova o contattaci su WhatsApp.",
@@ -115,8 +115,8 @@ const T = {
     bookDesc:
       "Book here for the best guaranteed price. No commission, no platforms. Just you and Cala di Forno.",
     bookWidget: "Book",
-    bookBtn: "Book & pay →",
-    bookChecking: "Checking availability...",
+    bookBtn: "Check availability →",
+    bookChecking: "Checking...",
     bookUnavailable: "Dates not available. Try different dates.",
     bookMinNights: "Minimum stay is 5 nights.",
     bookError: "Error. Please retry or contact us on WhatsApp.",
@@ -195,19 +195,10 @@ function BookingWidget({ t, lang }) {
   const [discountCode, setDiscountCode] = useState("");
   const [discountStatus, setDiscountStatus] = useState(null);
   const [discountData, setDiscountData] = useState(null);
-
-  useEffect(() => {
-    const handlePageShow = () => setStatus((s) => s === "checking" ? null : s);
-    const handleVisibility = () => {
-      if (document.visibilityState === "visible") handlePageShow();
-    };
-    window.addEventListener("pageshow", handlePageShow);
-    document.addEventListener("visibilitychange", handleVisibility);
-    return () => {
-      window.removeEventListener("pageshow", handlePageShow);
-      document.removeEventListener("visibilitychange", handleVisibility);
-    };
-  }, []);
+  const [availResult, setAvailResult] = useState(null);
+  const [guestName, setGuestName] = useState("");
+  const [guestEmail, setGuestEmail] = useState("");
+  const [guestPhone, setGuestPhone] = useState("");
 
   useEffect(() => {
     setLoadingDates(true);
@@ -251,48 +242,51 @@ function BookingWidget({ t, lang }) {
     return Math.min(Math.round(discountData.discount_value * 100), accommodationCents);
   };
 
-  const handleBook = async () => {
+  const handleCheck = async () => {
     if (!checkIn || !checkOut) return;
     if (nights < MIN_NIGHTS) { setStatus("minnights"); return; }
     setStatus("checking");
     try {
-      const availRes = await fetch("/.netlify/functions/check-availability", {
+      const res = await fetch("/.netlify/functions/check-availability", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ apartment: "cala", checkIn, checkOut }),
       });
-      const availData = await availRes.json();
-      if (!availData.available) {
+      const data = await res.json();
+      if (!data.available) {
         setStatus("unavailable");
-        setDebugMsg(JSON.stringify(availData));
+        setDebugMsg(JSON.stringify(data));
         return;
       }
-      const discountCents = calcDiscount(availData.totalCents);
-      const finalTotal = availData.totalCents - discountCents + cityTaxCents + cleaningCents;
-      const checkoutRes = await fetch("/.netlify/functions/create-checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          apartment: "cala",
-          checkIn,
-          checkOut,
-          guests: totalGuests,
-          nights: availData.nights,
-          totalCents: finalTotal,
-          cityTaxCents,
-          cleaningCents,
-          discountCode: discountStatus === "valid" ? discountCode.trim().toUpperCase() : "",
-        }),
-      });
-      const checkoutData = await checkoutRes.json();
-      if (checkoutData.error || !checkoutData.url) {
-        setDebugMsg(JSON.stringify(checkoutData));
-        setStatus("error");
-        return;
-      }
-      window.location.href = checkoutData.url;
+      setAvailResult(data);
+      setStatus("available");
     } catch (err) {
       console.error(err);
+      setStatus("error");
+    }
+  };
+
+  const handleRequest = async () => {
+    if (!guestName || !guestEmail) return;
+    setStatus("submitting");
+    const discountCents = calcDiscount(availResult.totalCents);
+    const finalTotal = availResult.totalCents - discountCents + cityTaxCents + cleaningCents;
+    const body = new URLSearchParams({
+      "form-name": "booking-request",
+      name: guestName,
+      email: guestEmail,
+      phone: guestPhone,
+      checkin: checkIn,
+      checkout: checkOut,
+      nights: availResult.nights,
+      guests: totalGuests,
+      total: `€${(finalTotal / 100).toFixed(2)}`,
+      discount: discountStatus === "valid" ? discountCode.trim().toUpperCase() : "",
+    });
+    try {
+      await fetch("/", { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: body.toString() });
+      setStatus("sent");
+    } catch {
       setStatus("error");
     }
   };
@@ -508,22 +502,111 @@ function BookingWidget({ t, lang }) {
           </div>
         )}
         {status === "error" && (
-          <div style={{ color: "#a0522d", fontSize: 13, padding: "8px 0" }}>{t.bookError}
-            {debugMsg && <div style={{ fontSize: 11, marginTop: 4, color: "#888", wordBreak: "break-all" }}>{debugMsg}</div>}
+          <div style={{ color: "#a0522d", fontSize: 13, padding: "8px 0" }}>{t.bookError}</div>
+        )}
+
+        {/* Contact form — shown after availability confirmed */}
+        {(status === "available" || status === "submitting") && availResult && (() => {
+          const discountCents = calcDiscount(availResult.totalCents);
+          const finalTotal = availResult.totalCents - discountCents + cityTaxCents + cleaningCents;
+          return (
+            <div style={{ borderTop: "1px solid #e0d8cc", paddingTop: 20, display: "flex", flexDirection: "column", gap: 14 }}>
+              <div style={{ fontSize: 13, color: "#4a7a4a", fontWeight: 600 }}>
+                ✓ {isIt ? "Date disponibili" : "Dates available"}
+              </div>
+              <div style={styles.priceBreakdown}>
+                <div style={styles.priceRow}>
+                  <span>{isIt ? `Alloggio (${availResult.nights} notti)` : `Accommodation (${availResult.nights} nights)`}</span>
+                  <span>€{(availResult.totalCents / 100).toFixed(2)}</span>
+                </div>
+                {discountCents > 0 && (
+                  <div style={{ ...styles.priceRow, color: "#4a7a4a" }}>
+                    <span>{isIt ? "Sconto" : "Discount"}</span>
+                    <span>−€{(discountCents / 100).toFixed(2)}</span>
+                  </div>
+                )}
+                <div style={styles.priceRow}>
+                  <span>{isIt ? "Pulizie" : "Cleaning"}</span>
+                  <span>€{CLEANING_FEE}</span>
+                </div>
+                <div style={styles.priceRow}>
+                  <span>{isIt ? "Tassa soggiorno" : "City tax"}</span>
+                  <span>€{(cityTaxCents / 100).toFixed(2)}</span>
+                </div>
+                <div style={{ ...styles.priceRow, fontWeight: 600, borderTop: "1px solid #e0d8cc", paddingTop: 8, marginTop: 4 }}>
+                  <span>{isIt ? "Totale stimato" : "Estimated total"}</span>
+                  <span>€{(finalTotal / 100).toFixed(2)}</span>
+                </div>
+              </div>
+              <div style={{ fontSize: 12, color: "#8a7f72", fontStyle: "italic" }}>
+                {isIt
+                  ? "Lascia i tuoi contatti. Ti confermiamo la disponibilità entro 24h."
+                  : "Leave your details. We'll confirm availability within 24 hours."}
+              </div>
+              <input
+                type="text"
+                placeholder={isIt ? "Nome e cognome *" : "Full name *"}
+                value={guestName}
+                onChange={(e) => setGuestName(e.target.value)}
+                style={styles.fieldInput}
+              />
+              <input
+                type="email"
+                placeholder={isIt ? "Email *" : "Email *"}
+                value={guestEmail}
+                onChange={(e) => setGuestEmail(e.target.value)}
+                style={styles.fieldInput}
+              />
+              <input
+                type="tel"
+                placeholder={isIt ? "Telefono (opzionale)" : "Phone (optional)"}
+                value={guestPhone}
+                onChange={(e) => setGuestPhone(e.target.value)}
+                style={styles.fieldInput}
+              />
+              <button
+                onClick={handleRequest}
+                disabled={!guestName || !guestEmail || status === "submitting"}
+                style={{
+                  ...styles.bookBtn,
+                  opacity: (!guestName || !guestEmail || status === "submitting") ? 0.4 : 1,
+                  cursor: (!guestName || !guestEmail || status === "submitting") ? "not-allowed" : "pointer",
+                }}
+              >
+                {status === "submitting"
+                  ? (isIt ? "Invio in corso..." : "Sending...")
+                  : (isIt ? "Invia richiesta →" : "Send request →")}
+              </button>
+            </div>
+          );
+        })()}
+
+        {status === "sent" && (
+          <div style={{ borderTop: "1px solid #e0d8cc", paddingTop: 20 }}>
+            <div style={{ fontSize: 15, color: "#4a7a4a", fontWeight: 600, marginBottom: 8 }}>
+              ✓ {isIt ? "Richiesta inviata!" : "Request sent!"}
+            </div>
+            <div style={{ fontSize: 13, color: "#6b6156", lineHeight: 1.7 }}>
+              {isIt
+                ? "Abbiamo ricevuto la tua richiesta. Ti risponderemo entro 24 ore per confermare la disponibilità e i dettagli."
+                : "We've received your request. We'll get back to you within 24 hours to confirm availability and details."}
+            </div>
           </div>
         )}
 
-        <button
-          onClick={handleBook}
-          disabled={status === "checking" || !range.from || !range.to}
-          style={{
-            ...styles.bookBtn,
-            opacity: (status === "checking" || !range.from || !range.to) ? 0.4 : 1,
-            cursor: (status === "checking" || !range.from || !range.to) ? "not-allowed" : "pointer",
-          }}
-        >
-          {status === "checking" ? t.bookChecking : t.bookBtn}
-        </button>
+        {status !== "available" && status !== "submitting" && status !== "sent" && (
+          <button
+            onClick={handleCheck}
+            disabled={status === "checking" || !range.from || !range.to}
+            style={{
+              ...styles.bookBtn,
+              opacity: (status === "checking" || !range.from || !range.to) ? 0.4 : 1,
+              cursor: (status === "checking" || !range.from || !range.to) ? "not-allowed" : "pointer",
+            }}
+          >
+            {status === "checking" ? t.bookChecking : t.bookBtn}
+          </button>
+        )}
       </div>
     </div>
   );

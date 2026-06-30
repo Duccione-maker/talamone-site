@@ -91,6 +91,20 @@
     </script>
   </head>
   <body>
+    <!-- Hidden form for Netlify Forms detection -->
+    <form name="booking-request" netlify netlify-honeypot="bot-field" hidden>
+      <input name="bot-field" />
+      <input name="name" />
+      <input name="email" />
+      <input name="phone" />
+      <input name="checkin" />
+      <input name="checkout" />
+      <input name="nights" />
+      <input name="guests" />
+      <input name="total" />
+      <input name="discount" />
+    </form>
+
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
