@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Apartment from "./pages/Apartment";
 import BookingSuccess from "./pages/BookingSuccess";
+import Admin from "./pages/Admin";
 
 export default function App() {
   const [lang, setLang] = useState("en");
@@ -29,6 +30,7 @@ export default function App() {
           path="/booking-success"
           element={<BookingSuccess lang={lang} />}
         />
+        <Route path="/admin" element={<Admin />} />
       </Routes>
     </BrowserRouter>
   );
