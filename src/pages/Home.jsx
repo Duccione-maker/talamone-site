@@ -997,7 +997,7 @@ export default function Home({ lang, setLang, scrollY }) {
               Review us on Trustpilot
             </a>
             <div style={{ fontSize: 10, letterSpacing: 1, lineHeight: 1.8, color: "#a89e91" }}>
-              CIN Cala di Forno: IT000000000000000000
+              CIN: IT053018B4B3IUZLD6
             </div>
           </div>
         </div>
