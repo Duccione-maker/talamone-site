@@ -57,7 +57,7 @@ export const APARTMENTS = [
       { icon: "🧊", it: "Frigo e congelatore", en: "Fridge & freezer" },
       { icon: "📡", it: "Forno a microonde", en: "Microwave" },
       { icon: "🍽️", it: "Stoviglie complete", en: "Full tableware" },
-      { icon: "🫧", it: "Lavastoviglie", en: "Dishwasher" },
+      { icon: "💧", it: "Lavastoviglie", en: "Dishwasher" },
       { icon: "🧺", it: "Lavatrice", en: "Washing machine" },
       { icon: "🚿", it: "2 docce (piano terra + piano -1)", en: "2 showers (ground floor + lower level)" },
       { icon: "🛏️", it: "Lenzuola incluse", en: "Bed linen included" },
