@@ -35,7 +35,7 @@ export const APARTMENTS = [
       floor: "2 livelli (piano terra + piano -1)",
       view: "Giardino e Parco della Maremma",
       description:
-        "Cala di Forno è immersa nel Parco Naturale della Maremma, a cinquanta metri dal mare. L'appartamento si sviluppa su due livelli: al piano terra il soggiorno con cucina attrezzata e il primo bagno con doccia, al piano inferiore la camera matrimoniale e il secondo bagno. Il giardino privato si apre direttamente sul paesaggio della macchia mediterranea. La doccia solare esterna è il rito perfetto dopo ogni nuotata.",
+        "Cala di Forno è immersa nel Parco Naturale della Maremma, a cinquanta metri dal mare. L'appartamento si sviluppa su due livelli: al piano terra il soggiorno con cucina attrezzata, la camera matrimoniale e il primo bagno con doccia; al piano inferiore il secondo bagno. Il giardino privato si apre direttamente sul paesaggio della macchia mediterranea. La doccia solare esterna è il rito perfetto dopo ogni nuotata.",
     },
     en: {
       tagline: "Fifty metres from the sea. The park right outside the door.",
@@ -46,7 +46,7 @@ export const APARTMENTS = [
       floor: "2 levels (ground floor + lower level)",
       view: "Garden and Maremma Natural Park",
       description:
-        "Cala di Forno sits inside the Maremma Natural Park, fifty metres from the sea. The apartment spans two levels: on the ground floor a living room with a fully equipped kitchen and the first shower bathroom; on the lower level the double bedroom and a second bathroom. The private garden opens directly onto the Mediterranean scrub landscape. The outdoor solar shower is the perfect ritual after every swim.",
+        "Cala di Forno sits inside the Maremma Natural Park, fifty metres from the sea. The apartment spans two levels: on the ground floor a living room with a fully equipped kitchen, the double bedroom and the first shower bathroom; on the lower level a second bathroom. The private garden opens directly onto the Mediterranean scrub landscape. The outdoor solar shower is the perfect ritual after every swim.",
     },
     amenities: [
       { icon: "🌊", it: "50 metri dal mare", en: "50 metres from the sea" },
