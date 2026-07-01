@@ -65,7 +65,7 @@ export const APARTMENTS = [
       { icon: "👶", it: "Culla disponibile", en: "Cot available" },
       { icon: "💨", it: "Rilevatore di gas e monossido di carbonio", en: "Gas & carbon monoxide detector" },
       { icon: "🧯", it: "Estintore", en: "Fire extinguisher" },
-      { icon: "🅿️", it: "Parcheggio", en: "Parking" },
+      { icon: "🅿️", it: "Parcheggio nello spazio adiacente all'Acquario di Talamone", en: "Parking in the area next to the Talamone Aquarium" },
     ],
   },
 ];
