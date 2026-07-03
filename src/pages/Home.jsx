@@ -1021,9 +1021,10 @@ export default function Home({ lang, setLang, scrollY }) {
             color: "#e8e0d8", textDecoration: "none",
           }}
         >
-          <span style={{ color: "#D62626", fontWeight: 500 }}>NO</span>{" "}
-          <span style={{ color: "#e8e0d8" }}>TUSCANY</span>
-          <span style={{ color: "#a89e91", fontWeight: 300 }}>{" · "}{lang === "it" ? "i nostri appartamenti a San Gimignano" : "our apartments in San Gimignano"} →</span>
+          {lang === "it" ? "Esplora anche i nostri appartamenti a " : "Explore our apartments in "}
+          <span style={{ color: "#D62626" }}>San</span>{" "}
+          <span style={{ color: "#10B981" }}>Gimignano</span>
+          {" →"}
         </a>
       </div>
     </div>
