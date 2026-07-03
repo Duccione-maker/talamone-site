@@ -62,7 +62,7 @@ const T = {
     netGuide:
       "La guida interattiva riservata agli ospiti. Ristoranti, artigiani, esperienze — solo posti selezionati personalmente, dove il tuo nome apre porte.",
     netLink: "Scopri No Tuscany →",
-    netOther: "Esplora anche i nostri appartamenti nel Chianti →",
+    netOther: "Esplora anche i nostri appartamenti a San Gimignano →",
     bookLabel: "PRENOTA",
     bookTitle: "Direttamente. Senza intermediari.",
     bookDesc:
@@ -111,7 +111,7 @@ const T = {
     netGuide:
       "The interactive guide reserved for our guests. Restaurants, artisans, experiences — only personally selected spots, where your name opens doors.",
     netLink: "Discover No Tuscany →",
-    netOther: "Explore our apartments in Chianti too →",
+    netOther: "Explore our apartments in San Gimignano too →",
     bookLabel: "BOOK",
     bookTitle: "Directly. No middlemen.",
     bookDesc:
