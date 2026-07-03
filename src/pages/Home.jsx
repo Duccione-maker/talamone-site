@@ -62,6 +62,7 @@ const T = {
     netGuide:
       "La guida interattiva riservata agli ospiti. Ristoranti, artigiani, esperienze — solo posti selezionati personalmente, dove il tuo nome apre porte.",
     netLink: "Scopri No Tuscany →",
+    netOther: "Esplora anche i nostri appartamenti nel Chianti →",
     bookLabel: "PRENOTA",
     bookTitle: "Direttamente. Senza intermediari.",
     bookDesc:
@@ -110,6 +111,7 @@ const T = {
     netGuide:
       "The interactive guide reserved for our guests. Restaurants, artisans, experiences — only personally selected spots, where your name opens doors.",
     netLink: "Discover No Tuscany →",
+    netOther: "Explore our apartments in Chianti too →",
     bookLabel: "BOOK",
     bookTitle: "Directly. No middlemen.",
     bookDesc:
@@ -949,6 +951,10 @@ export default function Home({ lang, setLang, scrollY }) {
             <a href="https://notuscany.com" target="_blank" rel="noopener noreferrer"
               style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, letterSpacing: 2, color: "#f4efe8", borderBottom: "1px solid #f4efe8", paddingBottom: 2, textDecoration: "none", alignSelf: "flex-start" }}>
               {t.netLink}
+            </a>
+            <a href="https://laripa.notuscany.com" target="_blank" rel="noopener noreferrer"
+              style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, letterSpacing: 2, color: "#a89e91", borderBottom: "1px solid #a89e91", paddingBottom: 2, textDecoration: "none", alignSelf: "flex-start" }}>
+              {t.netOther}
             </a>
           </div>
         </div>
