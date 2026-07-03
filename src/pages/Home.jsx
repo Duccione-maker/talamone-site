@@ -952,10 +952,6 @@ export default function Home({ lang, setLang, scrollY }) {
               style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, letterSpacing: 2, color: "#f4efe8", borderBottom: "1px solid #f4efe8", paddingBottom: 2, textDecoration: "none", alignSelf: "flex-start" }}>
               {t.netLink}
             </a>
-            <a href="https://laripa.notuscany.com" target="_blank" rel="noopener noreferrer"
-              style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, letterSpacing: 2, color: "#a89e91", borderBottom: "1px solid #a89e91", paddingBottom: 2, textDecoration: "none", alignSelf: "flex-start" }}>
-              {t.netOther}
-            </a>
           </div>
         </div>
       </section>
@@ -1008,6 +1004,26 @@ export default function Home({ lang, setLang, scrollY }) {
           </div>
         </div>
       </footer>
+
+      {/* BOTTOM BAR — cross-link La Ripa */}
+      <div style={{
+        position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 99,
+        background: "rgba(26,26,26,0.95)", backdropFilter: "blur(10px)",
+        padding: "10px 24px",
+        display: "flex", justifyContent: "center", alignItems: "center",
+      }}>
+        <a
+          href="https://laripa.notuscany.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            fontFamily: "'DM Sans', sans-serif", fontSize: 12, letterSpacing: 1.5,
+            color: "#e8e0d8", textDecoration: "none",
+          }}
+        >
+          {t.netOther}
+        </a>
+      </div>
     </div>
   );
 }
