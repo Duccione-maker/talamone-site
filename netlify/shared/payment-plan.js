@@ -3,11 +3,13 @@
 // Rule: if arrival is more than 7 days away, the guest pays a €250 deposit now
 // (card saved with consent) and the balance is charged 7 days before arrival.
 // Otherwise the guest pays everything now.
-// Cancellation (same as Airbnb "Flexible"): full refund up to 24 hours before
-// check-in; after that, nights stayed plus one night are kept. Refunds are made
-// by hand from the Stripe dashboard.
+// Cancellation: full refund up to 24 hours before check-in; in the last 24
+// hours one night is kept; after check-in nothing is refunded. Refunds are made
+// from the "Annulla e rimborsa" link in the Telegram message (refund-booking.js).
 
 const DEPOSIT_CENTS = 25000;
+// TODO-VERIFICA: check-in time used by the cancellation rule (Italian time)
+const CHECKIN_HOUR = 15;
 const BALANCE_DAYS_BEFORE = 7;
 
 // today's date in Italy, YYYY-MM-DD
@@ -30,6 +32,25 @@ function paymentPlan(totalCents, checkIn, now) {
   return { plan: "full", payNowCents: totalCents, balanceCents: 0, balanceDueDate: "" };
 }
 
+// the instant of YYYY-MM-DD at hour:00, Italian time
+function romeInstant(ymd, hour) {
+  const guess = new Date(`${ymd}T${String(hour).padStart(2, "0")}:00:00Z`);
+  const rome = new Date(guess.toLocaleString("sv-SE", { timeZone: "Europe/Rome" }).replace(" ", "T") + "Z");
+  return new Date(guess.getTime() - (rome.getTime() - guess.getTime()));
+}
+
+// How much of a booking is kept if cancelled now.
+// { rule: "full"|"one-night"|"none", keepCents }
+function cancellationKeep({ checkIn, nights, totalCents, cityTaxCents, cleaningCents }, now = new Date()) {
+  const arrival = romeInstant(checkIn, CHECKIN_HOUR);
+  if (now >= arrival) return { rule: "none", keepCents: totalCents };
+  if (arrival - now < 24 * 3600 * 1000) {
+    const accommodation = totalCents - (cityTaxCents || 0) - (cleaningCents || 0);
+    return { rule: "one-night", keepCents: Math.min(totalCents, Math.round(accommodation / Math.max(1, nights))) };
+  }
+  return { rule: "full", keepCents: 0 };
+}
+
 const eur = (c) => "€" + (c / 100).toFixed(2).replace(".", ",");
 const dmy = (ymd) => ymd.split("-").reverse().join("/");
 
@@ -37,8 +58,8 @@ const dmy = (ymd) => ymd.split("-").reverse().join("/");
 function checkoutNote(p, lang) {
   const it = lang === "it";
   const cancel = it
-    ? "Cancellazione gratuita fino a 24 ore prima dell'arrivo: ti rimborsiamo tutto. Dopo, paghi le notti trascorse più una notte."
-    : "Free cancellation up to 24 hours before arrival: we refund everything. After that, you pay for the nights stayed plus one night.";
+    ? "Cancellazione gratuita fino a 24 ore prima dell'arrivo: ti rimborsiamo tutto. Nelle ultime 24 ore paghi una notte; dopo l'arrivo non sono previsti rimborsi."
+    : "Free cancellation up to 24 hours before arrival: we refund everything. In the last 24 hours you pay one night; after arrival there are no refunds.";
   if (p.plan !== "deposit") return cancel;
   return (it
     ? `Oggi paghi ${eur(p.payNowCents)} di acconto. Il saldo di ${eur(p.balanceCents)} verrà addebitato su questa carta il ${dmy(p.balanceDueDate)}, 7 giorni prima dell'arrivo: confermando, ci autorizzi a farlo. `
@@ -69,4 +90,4 @@ function checkoutParams(p, lang, metadata) {
   return params;
 }
 
-module.exports = { DEPOSIT_CENTS, todayRome, addDays, paymentPlan, checkoutParams, eur, dmy };
+module.exports = { DEPOSIT_CENTS, todayRome, addDays, paymentPlan, checkoutParams, cancellationKeep, romeInstant, eur, dmy };
