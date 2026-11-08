@@ -1,6 +1,7 @@
 // /.netlify/functions/create-checkout
 //
-// Creates a Stripe Checkout session for a direct booking of Cala di Forno.
+// Creates a Stripe Checkout session for a direct booking (deposit + balance,
+// see ../shared/payment-plan.js) of Cala di Forno.
 // The price is computed HERE, never taken from the browser:
 //   accommodation  = Smoobu rates for each night (same as check-availability)
 //   discount       = code checked in Supabase (same as verify-discount)
@@ -15,6 +16,7 @@
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const { handler: checkAvailability } = require("./check-availability");
 const { handler: verifyDiscount } = require("./verify-discount");
+const { paymentPlan, checkoutParams, eur, dmy } = require("../shared/payment-plan");
 
 const APARTMENT = "cala";
 const MIN_NIGHTS = 5;
@@ -34,6 +36,7 @@ exports.handler = async (event) => {
   try {
     const body = JSON.parse(event.body || "{}");
     const { checkIn, checkOut, discountCode } = body;
+    const lang = body.lang === "it" ? "it" : "en";
     const adults = Number(body.adults);
     const childAges = Array.isArray(body.childAges) ? body.childAges.map(Number) : [];
 
@@ -81,9 +84,21 @@ exports.handler = async (event) => {
     const taxable = adults + childAges.filter((a) => a >= 14).length;
     const cityTaxCents = taxable * Math.min(nights, MAX_TAX_NIGHTS) * CITY_TAX_CENTS;
     const totalCents = accommodationCents - discountCents + CLEANING_CENTS + cityTaxCents;
+    const plan = paymentPlan(totalCents, checkIn);
 
     const siteUrl = process.env.SITE_URL || "https://notuscany.com/en/talamone";
     console.log("create-checkout:", { checkIn, checkOut, nights, guests, accommodationCents, discountCents, cityTaxCents, totalCents });
+
+    const name = "Cala di Forno — Talamone";
+    const details = [
+      `${nights} notti · ${checkIn} → ${checkOut} · ${guests} ospiti`,
+      `Alloggio: ${eur(accommodationCents)}`,
+      discountCents ? `Sconto ${code}: −${eur(discountCents)}` : null,
+      `Pulizie: ${eur(CLEANING_CENTS)}`,
+      `Tassa soggiorno: ${eur(cityTaxCents)}`,
+      `Totale: ${eur(totalCents)}`,
+      plan.plan === "deposit" ? `Saldo ${eur(plan.balanceCents)} il ${dmy(plan.balanceDueDate)}` : null,
+    ].filter(Boolean).join(" · ");
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
@@ -92,22 +107,16 @@ exports.handler = async (event) => {
         {
           price_data: {
             currency: "eur",
-            unit_amount: totalCents,
+            unit_amount: plan.payNowCents,
             product_data: {
-              name: "Cala di Forno — Talamone",
-              description: [
-                `${nights} notti · ${checkIn} → ${checkOut} · ${guests} ospiti`,
-                `Alloggio: €${(accommodationCents / 100).toFixed(2)}`,
-                discountCents ? `Sconto ${code}: −€${(discountCents / 100).toFixed(2)}` : null,
-                `Pulizie: €${(CLEANING_CENTS / 100).toFixed(2)}`,
-                `Tassa soggiorno: €${(cityTaxCents / 100).toFixed(2)}`,
-              ].filter(Boolean).join(" · "),
+              name: plan.plan === "deposit" ? `${lang === "it" ? "Acconto" : "Deposit"} — ${name}` : name,
+              description: details,
             },
           },
           quantity: 1,
         },
       ],
-      metadata: {
+      ...checkoutParams(plan, lang, {
         property: "talamone",
         apartment: APARTMENT,
         checkIn,
@@ -117,13 +126,13 @@ exports.handler = async (event) => {
         cityTaxCents: String(cityTaxCents),
         cleaningCents: String(CLEANING_CENTS),
         discountCode: code,
-      },
+        totalCents: String(totalCents),
+      }),
       success_url: `${siteUrl}/booking-success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${siteUrl}/#booking`,
     });
-
     console.log("Stripe session created:", session.id);
-    return json(200, { sessionId: session.id, url: session.url, totalCents });
+    return json(200, { sessionId: session.id, url: session.url, totalCents, ...plan });
   } catch (err) {
     console.error("create-checkout unhandled error:", err.message, err.stack);
     return json(500, { error: "Internal error" });
