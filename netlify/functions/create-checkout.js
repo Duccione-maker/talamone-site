@@ -18,7 +18,7 @@ const { handler: verifyDiscount } = require("./verify-discount");
 
 const APARTMENT = "cala";
 const MIN_NIGHTS = 5;
-const MAX_GUESTS = 7; // same limit as the booking form (4 adults + 3 children)
+const MAX_GUESTS = 4; // children included
 const CLEANING_CENTS = 4900;
 const CITY_TAX_CENTS = 150;
 const MAX_TAX_NIGHTS = 5;
