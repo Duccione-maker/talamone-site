@@ -8,7 +8,7 @@
 // from the "Annulla e rimborsa" link in the Telegram message (refund-booking.js).
 
 const DEPOSIT_CENTS = 25000;
-// TODO-VERIFICA: check-in time used by the cancellation rule (Italian time)
+// Check-in time (Italian time), used by the cancellation rule
 const CHECKIN_HOUR = 15;
 const BALANCE_DAYS_BEFORE = 7;
 
