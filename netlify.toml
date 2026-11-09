@@ -3,7 +3,29 @@
   publish = "dist"
   functions = "netlify/functions"
 
+# The site moved to notuscany.com (2026-11-09). Old pages redirect there;
+# the functions (/.netlify/functions/*: Stripe, Smoobu) are not affected by
+# redirects and keep running here.
+[[redirects]]
+  from = "/appartamenti/:id"
+  to = "https://notuscany.com/en/talamone/appartamenti/:id"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/booking-success"
+  to = "https://notuscany.com/en/talamone/booking-success"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/admin"
+  to = "https://notuscany.com/talamone/admin"
+  status = 301
+  force = true
+
 [[redirects]]
   from = "/*"
-  to = "/index.html"
-  status = 200
+  to = "https://notuscany.com/en/talamone/"
+  status = 301
+  force = true
