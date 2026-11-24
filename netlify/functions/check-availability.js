@@ -1,12 +1,36 @@
 // /.netlify/functions/check-availability
 //
-// Fetches iCal from Smoobu for the requested apartment,
-// parses blocked dates, then calls Smoobu /api/rates for real pricing.
+// Everything comes from Smoobu, nothing is written by hand here:
+//   - iCal of the apartment: booked nights;
+//   - /api/rates: price, minimum stay and availability of each night.
+// The minimum stay is the one Smoobu sets for the arrival day.
+// Price: ../shared/pricing.js (direct, weekly, early/last-minute discounts on
+// the nights) + cleaning. City tax is shown apart and paid at the property.
 //
 // ENV VARS needed:
 //   SMOOBU_ICAL_CALA         = https://login.smoobu.com/en/cockpit/ical/...
 //   SMOOBU_API_KEY           = API key from Smoobu Settings
 //   SMOOBU_APT_ID_CALA       = 3397626
+//   CITY_TAX_CENTS           = Talamone city tax per person per night, in
+//                              cents (optional, default 150: TO BE VERIFIED)
+
+const { DOG_CENTS, MAX_DOGS, isDate, addDays, daysBetween, priceNights } = require("../shared/pricing");
+
+// Fixed charges of Cala di Forno, the only figures not read from Smoobu.
+const RULES = {
+  cleaningCents: 3900,          // cleaning, per stay
+  // Talamone (Orbetello): per person aged 14+ per night. Amount to be verified,
+  // set CITY_TAX_CENTS on Netlify to change it without touching the code.
+  cityTaxCents: Number(process.env.CITY_TAX_CENTS) || 150,
+  cityTaxMinAge: 14,
+  cityTaxMaxNights: 5,
+  cityTaxPaidOnSite: true,
+  dogCents: DOG_CENTS,
+  maxDogs: MAX_DOGS,
+};
+exports.RULES = RULES;
+
+const reply = (statusCode, body) => ({ statusCode, body: JSON.stringify(body) });
 
 exports.handler = async (event) => {
   if (event.httpMethod !== "POST") {
@@ -14,126 +38,99 @@ exports.handler = async (event) => {
   }
 
   try {
-    const { apartment, checkIn, checkOut } = JSON.parse(event.body);
+    const { apartment, checkIn, checkOut } = JSON.parse(event.body || "{}");
     console.log("check-availability:", { apartment, checkIn, checkOut });
 
-    if (!apartment || !checkIn || !checkOut) {
-      return { statusCode: 400, body: JSON.stringify({ error: "Missing fields" }) };
+    if (typeof apartment !== "string" || !isDate(checkIn) || !isDate(checkOut)) {
+      return reply(400, { error: "Missing fields" });
     }
+    const nights = daysBetween(checkIn, checkOut);
+    if (nights < 1) return reply(200, { available: false, reason: "invalid_dates" });
 
-    // ── iCal availability check ─────────────────────────────────────────────
+    // ── iCal: booked nights ─────────────────────────────────────────────────
     const icalUrl = process.env[`SMOOBU_ICAL_${apartment.toUpperCase()}`];
     if (!icalUrl) {
       console.error("Unknown apartment:", apartment);
-      return { statusCode: 400, body: JSON.stringify({ error: "Unknown apartment" }) };
+      return reply(400, { error: "Unknown apartment" });
+    }
+    const icalText = await (await fetch(icalUrl)).text();
+    const booked = parseIcalBlocked(icalText);
+    if (booked.some((r) => checkIn < r.end && checkOut > r.start)) {
+      return reply(200, { available: false, reason: "dates_blocked" });
     }
 
-    const icalRes = await fetch(icalUrl);
-    const icalText = await icalRes.text();
-    const blockedRanges = parseIcalBlocked(icalText);
-
-    const reqStart = new Date(checkIn);
-    const reqEnd = new Date(checkOut);
-    const nights = Math.round((reqEnd - reqStart) / (1000 * 60 * 60 * 24));
-
-    if (nights < 1) {
-      return { statusCode: 200, body: JSON.stringify({ available: false, reason: "invalid_dates" }) };
-    }
-
-    const isBlocked = blockedRanges.some((r) => reqStart < r.end && reqEnd > r.start);
-    if (isBlocked) {
-      return { statusCode: 200, body: JSON.stringify({ available: false, reason: "dates_blocked" }) };
-    }
-
-    // ── Smoobu rates ────────────────────────────────────────────────────────
+    // ── Smoobu rates: price, minimum stay and availability of each night ────
     const aptId = process.env[`SMOOBU_APT_ID_${apartment.toUpperCase()}`];
     const apiKey = process.env.SMOOBU_API_KEY;
-
     if (!aptId || !apiKey) {
       console.error("Smoobu env vars missing:", { aptId: !!aptId, apiKey: !!apiKey });
-      return { statusCode: 500, body: JSON.stringify({ error: "Smoobu API not configured" }) };
+      return reply(500, { error: "Smoobu API not configured" });
     }
 
     const ratesUrl = `https://login.smoobu.com/api/rates?apartments[]=${aptId}&start_date=${checkIn}&end_date=${checkOut}`;
-    console.log("Fetching Smoobu rates:", ratesUrl);
-
-    const ratesRes = await fetch(ratesUrl, {
-      headers: {
-        "Api-Key": apiKey,
-        "Cache-Control": "no-cache",
-      },
-    });
-
+    const ratesRes = await fetch(ratesUrl, { headers: { "Api-Key": apiKey, "Cache-Control": "no-cache" } });
     const ratesBody = await ratesRes.text();
-    console.log("Smoobu rates status:", ratesRes.status);
-    console.log("Smoobu rates body:", ratesBody.slice(0, 500));
-
     if (!ratesRes.ok) {
-      return { statusCode: 502, body: JSON.stringify({ error: "Failed to fetch pricing from Smoobu", detail: ratesBody }) };
+      console.error("Smoobu rates failed:", ratesRes.status, ratesBody.slice(0, 500));
+      // 503, not 502: Cloudflare replaces 502 bodies with its own page
+      return reply(503, { error: "Failed to fetch pricing from Smoobu", smoobuStatus: ratesRes.status, smoobuBody: ratesBody.slice(0, 200) });
     }
 
     const ratesData = JSON.parse(ratesBody);
-
     // Smoobu may return keys as number or string — try both
     const aptRates = ratesData?.data?.[aptId] ?? ratesData?.data?.[Number(aptId)];
-
     if (!aptRates) {
       console.error("No aptRates found. aptId:", aptId, "keys in data:", Object.keys(ratesData?.data || {}));
-      return { statusCode: 502, body: JSON.stringify({ error: "No pricing data from Smoobu" }) };
+      return reply(503, { error: "No pricing data from Smoobu", keys: Object.keys(ratesData?.data || {}) });
     }
 
-    let totalCents = 0;
-    const start = new Date(checkIn);
+    // Minimum stay: the one Smoobu sets for the arrival day
+    const minNights = Number(aptRates[checkIn]?.min_length_of_stay) || 1;
+    if (nights < minNights) {
+      return reply(200, { available: false, reason: "min_stay", minNights, ...RULES });
+    }
+
+    let nightsCents = 0;
     for (let i = 0; i < nights; i++) {
-      const date = new Date(start);
-      date.setDate(date.getDate() + i);
-      const dateStr = date.toISOString().slice(0, 10);
+      const dateStr = addDays(checkIn, i);
       const dayRate = aptRates[dateStr];
-      console.log(`Night ${i + 1} (${dateStr}):`, dayRate);
-      if (!dayRate || !dayRate.price) {
-        return { statusCode: 200, body: JSON.stringify({ available: false, reason: "pricing_unavailable", date: dateStr }) };
+      if (!dayRate || dayRate.available === 0) {
+        return reply(200, { available: false, reason: "dates_blocked", date: dateStr });
       }
-      totalCents += Math.round(dayRate.price * 100);
+      if (!dayRate.price) {
+        return reply(200, { available: false, reason: "pricing_unavailable", date: dateStr });
+      }
+      nightsCents += Math.round(dayRate.price * 100);
     }
 
-    console.log("check-availability result:", { available: true, nights, totalCents });
+    const price = priceNights(nightsCents, nights, checkIn);
+    console.log("check-availability result:", { apartment, checkIn, checkOut, nights, minNights, ...price });
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify({
-        available: true,
-        nights,
-        totalCents,
-        nightlyRate: Math.round(totalCents / nights),
-        currency: "eur",
-      }),
-    };
+    return reply(200, {
+      available: true,
+      nights,
+      minNights,
+      ...price,                                   // nightsCents, discounts, accommodationCents
+      totalCents: price.accommodationCents,       // older pages read this
+      stayCents: price.accommodationCents + RULES.cleaningCents,
+      currency: "eur",
+      ...RULES,
+    });
   } catch (err) {
     console.error("check-availability unhandled error:", err.message, err.stack);
-    return { statusCode: 500, body: JSON.stringify({ error: "Internal error", detail: err.message }) };
+    return reply(500, { error: "Internal error", detail: err.message });
   }
 };
 
+// Booked ranges as YYYY-MM-DD strings: { start, end } with end = check-out day
 function parseIcalBlocked(icalText) {
   const ranges = [];
   const events = icalText.split("BEGIN:VEVENT");
   for (let i = 1; i < events.length; i++) {
     const dtstart = events[i].match(/DTSTART[^:]*:(\d{8})/);
     const dtend = events[i].match(/DTEND[^:]*:(\d{8})/);
-    if (dtstart && dtend) {
-      ranges.push({
-        start: parseIcalDate(dtstart[1]),
-        end: parseIcalDate(dtend[1]),
-      });
-    }
+    if (dtstart && dtend) ranges.push({ start: ymd(dtstart[1]), end: ymd(dtend[1]) });
   }
   return ranges;
 }
-
-function parseIcalDate(str) {
-  return new Date(
-    parseInt(str.substring(0, 4)),
-    parseInt(str.substring(4, 6)) - 1,
-    parseInt(str.substring(6, 8))
-  );
-}
+const ymd = (s) => `${s.slice(0, 4)}-${s.slice(4, 6)}-${s.slice(6, 8)}`;

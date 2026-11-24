@@ -1,13 +1,13 @@
 // Deposit + balance, shared by create-checkout (both sites) and charge-balances.
 //
-// Rule: if arrival is more than 7 days away, the guest pays a €250 deposit now
+// Rule: if arrival is more than 7 days away, the guest pays a €300 deposit now
 // (card saved with consent) and the balance is charged 7 days before arrival.
 // Otherwise the guest pays everything now.
 // Cancellation: full refund up to 24 hours before check-in; in the last 24
 // hours one night is kept; after check-in nothing is refunded. Refunds are made
 // from the "Annulla e rimborsa" link in the Telegram message (refund-booking.js).
 
-const DEPOSIT_CENTS = 25000;
+const DEPOSIT_CENTS = 30000;
 // Check-in time (Italian time), used by the cancellation rule
 const CHECKIN_HOUR = 15;
 const BALANCE_DAYS_BEFORE = 7;
@@ -41,11 +41,11 @@ function romeInstant(ymd, hour) {
 
 // How much of a booking is kept if cancelled now.
 // { rule: "full"|"one-night"|"none", keepCents }
-function cancellationKeep({ checkIn, nights, totalCents, cityTaxCents, cleaningCents }, now = new Date()) {
+function cancellationKeep({ checkIn, nights, totalCents, cityTaxCents, cleaningCents, dogsCents }, now = new Date()) {
   const arrival = romeInstant(checkIn, CHECKIN_HOUR);
   if (now >= arrival) return { rule: "none", keepCents: totalCents };
   if (arrival - now < 24 * 3600 * 1000) {
-    const accommodation = totalCents - (cityTaxCents || 0) - (cleaningCents || 0);
+    const accommodation = totalCents - (cityTaxCents || 0) - (cleaningCents || 0) - (dogsCents || 0);
     return { rule: "one-night", keepCents: Math.min(totalCents, Math.round(accommodation / Math.max(1, nights))) };
   }
   return { rule: "full", keepCents: 0 };

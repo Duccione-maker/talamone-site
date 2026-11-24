@@ -57,7 +57,7 @@ function parseIcalBlocked(icalText) {
       const cur = new Date(start);
       while (cur < end) {
         dates.push(cur.toISOString().slice(0, 10));
-        cur.setDate(cur.getDate() + 1);
+        cur.setUTCDate(cur.getUTCDate() + 1);
       }
       ranges.push(...dates);
     }
@@ -67,9 +67,9 @@ function parseIcalBlocked(icalText) {
 }
 
 function parseIcalDate(str) {
-  return new Date(
+  return new Date(Date.UTC(
     parseInt(str.substring(0, 4)),
     parseInt(str.substring(4, 6)) - 1,
     parseInt(str.substring(6, 8))
-  );
+  ));
 }
