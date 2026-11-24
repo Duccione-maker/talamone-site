@@ -61,7 +61,8 @@ exports.handler = async (event) => {
 
     // ── Smoobu rates: price, minimum stay and availability of each night ────
     const aptId = process.env[`SMOOBU_APT_ID_${apartment.toUpperCase()}`];
-    const apiKey = process.env.SMOOBU_API_KEY;
+    // trimmed: a space pasted with the key makes Smoobu answer 401
+    const apiKey = (process.env.SMOOBU_API_KEY || "").trim();
     if (!aptId || !apiKey) {
       console.error("Smoobu env vars missing:", { aptId: !!aptId, apiKey: !!apiKey });
       return reply(500, { error: "Smoobu API not configured" });
