@@ -8,7 +8,7 @@
 //                    ../shared/pricing.js)
 //   discount code  = checked in Supabase (same as verify-discount)
 //   cleaning       = €39
-//   dogs           = €20 per dog, at most 2
+//   dogs           = free of charge, at most 2
 // City tax (guests aged 14+ × min(nights, 5), amount in RULES) is NOT charged here:
 // it is paid at the property. (Figures: RULES in check-availability.js)
 //

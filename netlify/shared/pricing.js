@@ -1,5 +1,5 @@
 // Direct-booking price of a stay, shared by check-availability and
-// create-checkout. Identical file in laripa-site and talamone-site.
+// create-checkout. Same file as laripa-site except DOG_CENTS (dogs are free here).
 //
 // Nightly prices come from Smoobu. Discounts apply to the nights only (never
 // to cleaning or dogs) and multiply, they do not add up:
@@ -20,7 +20,7 @@ const DISCOUNTS = {
   lastMinuteMaxDays: 10,
 };
 
-const DOG_CENTS = 2000; // per dog, per stay
+const DOG_CENTS = 0; // dogs stay free (Cala di Forno), at most MAX_DOGS
 const MAX_DOGS = 2;
 
 const isDate = (s) => typeof s === "string" && /^\d{4}-\d{2}-\d{2}$/.test(s);
