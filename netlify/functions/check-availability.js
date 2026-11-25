@@ -27,7 +27,7 @@ const RULES = {
   cityTaxMinAge: 14,
   cityTaxMaxNights: 5,
   cityTaxPaidOnSite: true,
-  dogCents: DOG_CENTS,
+  dogCents: DOG_CENTS,          // dogs are free of charge (0)
   maxDogs: MAX_DOGS,
 };
 exports.RULES = RULES;

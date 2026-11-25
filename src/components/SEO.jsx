@@ -125,7 +125,7 @@ export function HomeSEO({ lang }) {
       ],
       "numberOfRooms": 1,
       "checkinTime": "15:00",
-      "checkoutTime": "10:00",
+      "checkoutTime": "09:00",
       "petsAllowed": false,
       "availableLanguage": ["Italian", "English"],
       "sameAs": ["https://notuscany.com"]
