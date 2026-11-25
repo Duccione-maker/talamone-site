@@ -10,11 +10,13 @@
 // ENV VARS needed:
 //   SMOOBU_ICAL_CALA         = https://login.smoobu.com/en/cockpit/ical/...
 //   SMOOBU_API_KEY           = API key from Smoobu Settings
+//   SMOOBU_API_SECRET        = API secret from Smoobu Settings (HMAC signing)
 //   SMOOBU_APT_ID_CALA       = 3397626
 //   CITY_TAX_CENTS           = Talamone city tax per person per night, in
 //                              cents (optional, default 150: TO BE VERIFIED)
 
 const { DOG_CENTS, MAX_DOGS, isDate, addDays, daysBetween, priceNights } = require("../shared/pricing");
+const { smoobuFetch, SmoobuConfigError } = require("../shared/smoobu");
 
 // Fixed charges of Cala di Forno, the only figures not read from Smoobu.
 const RULES = {
@@ -61,15 +63,25 @@ exports.handler = async (event) => {
 
     // ── Smoobu rates: price, minimum stay and availability of each night ────
     const aptId = process.env[`SMOOBU_APT_ID_${apartment.toUpperCase()}`];
-    // trimmed: a space pasted with the key makes Smoobu answer 401
-    const apiKey = (process.env.SMOOBU_API_KEY || "").trim();
-    if (!aptId || !apiKey) {
-      console.error("Smoobu env vars missing:", { aptId: !!aptId, apiKey: !!apiKey });
+    if (!aptId) {
+      console.error("Smoobu env vars missing:", { aptId: !!aptId });
       return reply(500, { error: "Smoobu API not configured" });
     }
 
-    const ratesUrl = `https://login.smoobu.com/api/rates?apartments[]=${aptId}&start_date=${checkIn}&end_date=${checkOut}`;
-    const ratesRes = await fetch(ratesUrl, { headers: { "Api-Key": apiKey, "Cache-Control": "no-cache" } });
+    let ratesRes;
+    try {
+      ratesRes = await smoobuFetch("GET", "/api/rates", {
+        "apartments[]": [aptId],
+        start_date: checkIn,
+        end_date: checkOut,
+      });
+    } catch (err) {
+      if (err instanceof SmoobuConfigError) {
+        console.error("Smoobu API not configured:", err.message);
+        return reply(500, { error: "Smoobu API not configured", detail: err.message });
+      }
+      throw err;
+    }
     const ratesBody = await ratesRes.text();
     if (!ratesRes.ok) {
       console.error("Smoobu rates failed:", ratesRes.status, ratesBody.slice(0, 500));
