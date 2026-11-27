@@ -1,17 +1,18 @@
 // Direct-booking price of a stay, shared by check-availability and
 // create-checkout. Same file as laripa-site except DOG_CENTS (dogs are free here).
 //
-// Nightly prices come from Smoobu. Discounts apply to the nights only (never
-// to cleaning or dogs) and multiply, they do not add up:
-//   direct booking    −10%  always
+// Nightly prices come from Smoobu. There is no automatic direct-booking
+// discount: the public price on the site is the same as on the portals.
+// Discounts apply to the nights only (never to cleaning or dogs) and
+// multiply, they do not add up:
 //   weekly            −5%   7 nights or more
 //   then at most one of:
 //   early booking     −5%   arrival 150 days or more from today
 //   last minute       −10%  arrival within 10 days
-// The discounted nights are rounded to the whole euro.
+// The discounted nights are rounded to the whole euro (with no discount the
+// Smoobu total is used as is).
 
 const DISCOUNTS = {
-  direct: 10,
   weekly: 5,
   weeklyMinNights: 7,
   early: 5,
@@ -38,7 +39,7 @@ const todayRome = (now = new Date()) => now.toLocaleDateString("sv-SE", { timeZo
 
 // Discounts that apply to a stay: [{ key, pct }]
 function stayDiscounts(nights, checkIn, today) {
-  const out = [{ key: "direct", pct: DISCOUNTS.direct }];
+  const out = [];
   if (nights >= DISCOUNTS.weeklyMinNights) out.push({ key: "weekly", pct: DISCOUNTS.weekly });
   const daysAhead = daysBetween(today, checkIn);
   if (daysAhead >= DISCOUNTS.earlyMinDays) out.push({ key: "early", pct: DISCOUNTS.early });
@@ -58,9 +59,11 @@ function priceNights(nightsCents, nights, checkIn, today = todayRome()) {
     running = next;
     return { ...d, cents };
   });
+  // no discount: the Smoobu total as is, so nights − discounts = accommodation
+  if (!discounts.length) return { nightsCents, discounts, accommodationCents: nightsCents };
   // whole euros; the rounding goes into the last discount
   const accommodationCents = Math.round(running / 100) * 100;
-  if (discounts.length) discounts[discounts.length - 1].cents += running - accommodationCents;
+  discounts[discounts.length - 1].cents += running - accommodationCents;
   return { nightsCents, discounts, accommodationCents };
 }
 
